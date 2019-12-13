@@ -5,7 +5,9 @@ int strToInt(char * str_input, int n) {
 
 	for (int i = 0; i < n; i++) {
 		if (str_input[i] >= 48 && str_input[i] <= 57) {
-			result += (str_input[i] - 48) * pow(10, n - i - 1); // ASCII: '0' = 48 
+			//result += (str_input[i] - 48) * pow(10, n - i - 1); // ASCII: '0' = 48
+			result *= 10;
+			result += str_input[i] - 48;
 		}
 	}
 
