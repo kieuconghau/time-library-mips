@@ -42,3 +42,11 @@ StrToInt:
 	jr   $ra
 	
 	
+##### int Day(char* TIME)
+Day:
+						# $a0: TIME
+	addi $a1, $zero, 2			# $a1: 2
+	jal  StrToInt
+	jr   $ra
+
+
