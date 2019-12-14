@@ -58,3 +58,11 @@ Month:
 	jal  StrToInt
 	jr   $ra
 	
+
+##### int Year(char* TIME)
+Year:
+						# $a0: TIME
+	addi $a0, $a0, 6			# $a0: TIME + 6
+	addi $a1, $zero, 4			# $a1: 4
+	jal  StrToInt
+	jr   $ra
