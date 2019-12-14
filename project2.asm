@@ -1,14 +1,10 @@
 ##### int main()
 .data
-str:	.asciiz "18/12/0200"
+str:	.asciiz "18/12/2000"
 .text
 Main:
 	la  $a0, str
-	#li  $a1, 10
-	jal Year
-	
-	move $a0, $v0
-	jal  IsLeap
+	jal LeapYear
 	
 	move $a0, $v0
 	li   $v0, 1
@@ -116,5 +112,23 @@ IsLeap:
 	IsLeap_return_1:			# return 1
 	addi $v0, $zero, 1
 	jr   $ra
+
+
+##### int LeapYear(char* TIME)
+LeapYear:
+						# $a0: TIME (char*)
+	addi $sp, $sp, -4
+	sw   $ra, 0($sp)
+						
+						# $a0: TIME
+	jal  Year				# return year (int)
+	
+	add  $a0, $zero, $v0			# $a0: year (int)
+	jal  IsLeap				# return IsLeap(year)
+	
+	lw   $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr   $ra
+
 
 
