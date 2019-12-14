@@ -50,3 +50,11 @@ Day:
 	jr   $ra
 
 
+##### int Month(char* TIME)
+Month:
+						# $a0: TIME
+	addi $a0, $a0, 3			# $a0: TIME + 3
+	addi $a1, $zero, 2			# $a1: 2
+	jal  StrToInt
+	jr   $ra
+	
