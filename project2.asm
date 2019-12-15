@@ -1,25 +1,10 @@
 ##### int main()
 .data
-str:	.asciiz "18/12/2000"
-test:	.asciiz "123456789"
-endl:	.asciiz "\n"
+str:	.asciiz "05/09/1796"
 .text
 Main:
 	la   $a0, str
-	li   $a1, 99
-	jal  Convert
-	
-	move $a0, $v0
-	li   $v0, 4
-	syscall
-	
-	la   $a0, endl
-	li   $v0, 4
-	syscall
-	
-	la   $a0, test
-	li   $v0, 4
-	syscall
+	jal  PrintNearLeapYear
 	
 	# Exit
 	li   $v0, 10
@@ -425,3 +410,83 @@ Convert_return:
 	add  $v0, $a0, $zero
 	jr   $ra
 	
+
+##### void printNearLeapYear(char* TIME)
+PrintNearLeapYear:
+.data
+endl:	.asciiz "\n"
+.text
+						# $a0: TIME (char*)
+	addi $sp, $sp, -12
+	sw   $s0, 8($sp)
+	sw   $s1, 4($sp)
+	sw   $s2, 0($sp)
+											# $a0: TIME
+	addi $sp, $sp, -8
+	sw   $ra, 4($sp)
+	sw   $a0, 0($sp)
+	jal  Year				# $a0: TIME (char*)
+	lw   $ra, 4($sp)
+	lw   $a0, 0($sp)
+	addi $sp, $sp, 8
+	
+	add  $s0, $zero, $v0			# $s0: year (int)
+	addi $s1, $zero, 0			# $s1: i = 0
+	addi $s2, $zero, 1			# $s2: d = 1
+	
+	addi $sp, $sp, -8
+	sw   $ra, 4($sp)
+	sw   $a0, 0($sp)
+	jal  LeapYear				# $a0: TIME (char*)
+	lw   $ra, 4($sp)
+	lw   $a0, 0($sp)
+	addi $sp, $sp, 8
+	
+	beq  $v0, $zero, PrintNearLeapYear_loop_1
+	addi $s2, $zero, 4			# d = 4
+	
+PrintNearLeapYear_loop_1:
+	slti $t0, $s1, 2
+	beq  $t0, $zero, PrintNearLeapYear_end_1
+	add  $s0, $s0, $s2			# year += d
+	
+	addi $sp, $sp, -8
+	sw   $ra, 4($sp)
+	sw   $a0, 0($sp)
+	add  $a0, $zero, $s0			
+	jal  IsLeap				# $a0: year (int)
+	lw   $ra, 4($sp)
+	lw   $a0, 0($sp)
+	addi $sp, $sp, 8
+	
+	beq  $v0, $zero, PrintNearLeapYear_continue_1
+	addi $s1, $s1, 1			# ++i
+	
+	addi $sp, $sp, -4
+	sw   $a0, 0($sp)
+	
+	# cout << year;
+	add  $a0, $zero, $s0
+	addi $v0, $zero, 1
+	syscall
+	
+	# cout << endl;
+	la   $a0, endl
+	addi $v0, $zero, 4
+	syscall
+	
+	sw   $a0, 0($sp)
+	addi $sp, $sp, 4
+	
+PrintNearLeapYear_continue_1:
+	j    PrintNearLeapYear_loop_1
+	
+PrintNearLeapYear_end_1:
+	
+PrintNearLeapYear_return:
+	lw   $s2, 0($sp)
+	lw   $s1, 4($sp)
+	lw   $s0, 8($sp)
+	addi $sp, $sp, 12
+
+	jr   $ra
