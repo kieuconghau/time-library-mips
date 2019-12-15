@@ -324,8 +324,29 @@ StringLength_return:
 StrToInt:
 	jr   $ra
 
-########################################
-	.data
-	.text
+##### int IsLeap(int year)
+# Written by KCH
 IsLeap:
+						# $a0: year (int)
+	addi $t0, $zero, 400			# $t0: temp0 = 400
+	div  $a0, $t0
+	mfhi $t0				# $t0: temp0 = year % 400
+	beq  $t0, $zero, IsLeap_return_1	# if temp0 == 0 then return 1
+	
+	addi $t0, $zero, 100			# $t0: temp0 = 100
+	div  $a0, $t0				
+	mfhi $t0				# $t0: temp0 = year % 100
+	beq  $t0, $zero, IsLeap_return_0	# if temp0 == 0 then return 0
+	
+	addi $t0, $zero, 4			# $t0: temp0 = 4
+	div  $a0, $t0
+	mfhi $t0				# $t0: temp0 = year % 4
+	beq  $t0, $zero, IsLeap_return_1	# if temp0 == 0 then return 1
+	
+	IsLeap_return_0:			# return 0
+	addi $v0, $zero, 0
+	jr   $ra
+	
+	IsLeap_return_1:			# return 1
+	addi $v0, $zero, 1
 	jr   $ra
