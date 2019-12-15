@@ -148,9 +148,9 @@ CheckInput_while:
 	beq  $t1, $zero, CheckInput_return
 
 	# Get and store string[i] in $t1
-	sll  $t1, $t0, 2
+	add  $t1, $t0, $zero
 	add  $t1, $t1, $a0
-	lw   $t1, 0($t1)
+	lb   $t1, 0($t1)
 
 	# If string[i] is less than the decimal value of char '0', return false
 	addi $t2, $zero, 48
@@ -186,9 +186,9 @@ StringLength_while:
 	beq  $t1, $zero, StringLength_return
 
 	# Get and store string[i] in $t1
-	sll  $t1, $t0, 2
+	add  $t1, $t0, $zero
 	add  $t1, $t1, $a0
-	lw   $t1, 0($t1)
+	lb   $t1, 0($t1)
 
 	beq  $t1, $zero, StringLength_return # If string[i] == '\0', return
 	addi $t2, $zero, 10                  # $t2 = decimal value of char '\n'
