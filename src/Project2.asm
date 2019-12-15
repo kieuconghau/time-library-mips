@@ -233,10 +233,18 @@ CheckDay_return:
 	.text
 CheckMonth:
 	addi $v0, $zero, 1
+
+	beq  $a0, $zero, CheckMonth_setFalse
+
 	addi $t0, $zero, 12
 	slt  $t1, $t0, $a0
-	beq  $t1, $zero, CheckMonth_return
+	bne  $t1, $zero, CheckMonth_setFalse
+
+	j    CheckMonth_return
+
+CheckMonth_setFalse:
 	add  $v0, $zero, $zero
+
 CheckMonth_return:
 	jr   $ra
 
