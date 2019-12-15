@@ -131,4 +131,78 @@ LeapYear:
 	jr   $ra
 
 
-
+##### char* Convert(char* TIME, char type)
+.data
+month1:	 .asciiz "January"
+month2:  .asciiz "February"
+month3:  .asciiz "March"
+month4:  .asciiz "April"
+month5:  .asciiz "May"
+month6:  .asciiz "June"
+month7:  .asciiz "July"
+month8:  .asciiz "August"
+month9:	 .asciiz "September"
+month10: .asciiz "October"
+month11: .asciiz "November"
+month12: .asciiz "December"
+.text
+Convert:
+						# $a0: TIME (char*)
+						# $a1: type (char)
+	addi $sp, $sp, -16			# 12 bytes for string TIME, 4 bytes for $s0
+	sw   $s0, 12($sp)
+	add  $s0, $zero, $sp			# $s0: str (char[12])
+	addi $t0, $zero, 0			# St0: i = 0
+	Convert_loop_1:
+	slti $t1, $t0, 11
+	beq  $t1, $zero, Convert_end_1
+	add  $t1, $s0, $t0			# str + i
+	add  $t2, $a0, $t0			# TIME + i
+	lb   $t2, 0($t2)			# TIME[i]
+	sb   $t2, 0($t1)			# str[i] = TIME[i]
+	addi $t0, $t0, 1			# ++i
+	Convert_end_1:
+	
+	addi $t0, $a1, -65
+	beq  $t0, $zero, Convert_case_a		# type == 'A' then goto case_a
+	addi $t0, $a1, -97
+	beq  $t0, $zero, Convert_case_a		# type == 'a' then goto case_a
+	j    Convert_condition_1
+	Convert_case_a:
+	addi $t0, $zero, 0			# i = 0
+	Convert_loop_2:
+	slti $t1, $t0, 2
+	beq  $t1, $zero, Convert_end_2
+	addi $t1, $a0, $t0			# TIME + i
+	addi $t2, $t0, 3			# i + 3
+	add  $t2, $s0, $t2			# str + i + 3
+	lb   $t2, 0($t2)			# str[i + 3]
+	sb   $t2, 0($t1)			# TIME[i] = str[i + 3]
+	addi $t1, $t0, 3			# i + 3
+	add  $t1, $a0, $t1			# TIME + i + 3
+	add  $t2, $s0, $t0			# str + i
+	lb   $t2, 0($t2)			# str[i]
+	sb   $t2, 0($t1)			# TIME[i + 3] = str[i]
+	addi $t0, $t0, 1			# ++i
+	j    Convert_loop_2:
+	Convert_end_2:
+	
+	
+	Convert_condition_1:
+	addi $t0, $a1, -66
+	beq  $t0, $zero, Convert_case_b_c
+	addi $t0, $a1, -98
+	beq  $t0, $zero, Convert_case_b_c
+	addi $t0, $a1, -67
+	beq  $t0, $zero, Convert_case_b_c
+	addi $t0, $a1, -99
+	beq  $t0, $zero, Convert_case_b_c
+	j    Convert_return
+	Convert_case_b_c:
+	
+	
+	Convert_return:
+	lw   $s0, 12($sp)
+	add  $v0, $a0, $zero
+	jr   $ra
+	
