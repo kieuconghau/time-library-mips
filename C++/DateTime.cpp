@@ -247,180 +247,147 @@ void printNearLeapYear(char* TIME) {
 	}
 }
 
-char* Convert(char* TIME, char type, char* str_output) {
+char* Convert(char* TIME, char type) {	// size of str TIME must be 18
+	char* str = new char[11];
+	
+	int i = 0;
+	while (i < 11) {
+		str[i] = TIME[i];
+		++i;
+	}
+	
 	/* Case: 'A' or 'a' */
 	if (type == 65 || type == 97) {
 		int i = 0;
 
-		while (i < 3) {	// MM/
-			str_output[i++] = TIME[i + 3];
-		}
-	
-		while (i < 6) {	// MM/DD/
-			str_output[i++] = TIME[i - 3];
-		}
-
-		while (i < 11) { // MM/DD/YYYY + '/0'
-			str_output[i++] = TIME[i];
+		while (i < 2) {
+			TIME[i] = str[i + 3];
+			TIME[i + 3] = str[i];
+			++i;
 		}
 	}
 	else if (type == 66 || type == 98 || type == 67 || type == 99) {
-		char month[10];
-		int m = Month(TIME), i = 0;
-
-		switch (m) {
+		// Stored in .data (MIPS)
+		char Month1[8] = "January";
+		char Month2[9] = "February";
+		char Month3[6] = "March";
+		char Month4[6] = "April";
+		char Month5[4] = "May";
+		char Month6[5] = "June";
+		char Month7[5] = "July";
+		char Month8[7] = "August";
+		char Month9[10] = "September";
+		char Month10[8] = "October";
+		char Month11[9] = "November";
+		char Month12[9] = "December";
+		
+		char* month;	// A pointer to Month1 or Month2 or ... Month12
+		switch (Month(TIME)) {
 		case 1:
-			month[i++] = 74;		// 'J'
-			month[i++] = 97;		// 'a'
-			month[i++] = 110;		// 'n'
-			month[i++] = 117;		// 'u'
-			month[i++] = 97;		// 'a'
-			month[i++] = 114;		// 'r'
-			month[i++] = 121;		// 'y'
+			month = Month1;
 			break;
 		case 2:
-			month[i++] = 70;		// 'F'
-			month[i++] = 101;		// 'e'
-			month[i++] = 98;		// 'b'
-			month[i++] = 114;		// 'r'
-			month[i++] = 117;		// 'u'
-			month[i++] = 97;		// 'a'
-			month[i++] = 114;		// 'r'
-			month[i++] = 121;		// 'y'
+			month = Month2;
 			break;
 		case 3:
-			month[i++] = 77;		// 'M'
-			month[i++] = 97;		// 'a'
-			month[i++] = 114;		// 'r'
-			month[i++] = 99;		// 'c'
-			month[i++] = 104;		// 'h'
+			month = Month3;
 			break;
 		case 4:
-			month[i++] = 65;		// 'A'
-			month[i++] = 112;		// 'p'
-			month[i++] = 114;		// 'r'
-			month[i++] = 105;		// 'i'
-			month[i++] = 108;		// 'l'
+			month = Month4;
 			break;
 		case 5:
-			month[i++] = 77;		// 'M'
-			month[i++] = 97;		// 'a'
-			month[i++] = 121;		// 'y'
+			month = Month5;
 			break;
 		case 6:
-			month[i++] = 74;		// 'J'
-			month[i++] = 117;		// 'u'
-			month[i++] = 110;		// 'n'
-			month[i++] = 101;		// 'e'
+			month = Month6;
 			break;
 		case 7:
-			month[i++] = 74;		// 'J'
-			month[i++] = 117;		// 'u'
-			month[i++] = 108;		// 'l'
-			month[i++] = 121;		// 'y'
+			month = Month7;
 			break;
 		case 8:
-			month[i++] = 65;		// 'A'
-			month[i++] = 117;		// 'u'
-			month[i++] = 103;		// 'g'
-			month[i++] = 117;		// 'u'
-			month[i++] = 115;		// 's'
-			month[i++] = 115;		// 't'
+			month = Month8;
 			break;
 		case 9:
-			month[i++] = 83;		// 'S'
-			month[i++] = 101;		// 'e'
-			month[i++] = 112;		// 'p'
-			month[i++] = 115;		// 't'
-			month[i++] = 101;		// 'e'
-			month[i++] = 109;		// 'm'
-			month[i++] = 98;		// 'b'
-			month[i++] = 101;		// 'e'
-			month[i++] = 114;		// 'r'
+			month = Month9;
 			break;
 		case 10:
-			month[i++] = 79;		// 'O'
-			month[i++] = 99;		// 'c'
-			month[i++] = 115;		// 't'
-			month[i++] = 111;		// 'o'
-			month[i++] = 98;		// 'b'
-			month[i++] = 101;		// 'e'
-			month[i++] = 114;		// 'r'
+			month = Month10;
 			break;
 		case 11:
-			month[i++] = 78;		// 'N'
-			month[i++] = 111;		// 'o'
-			month[i++] = 1158;		// 'v'
-			month[i++] = 101;		// 'e'
-			month[i++] = 109;		// 'm'
-			month[i++] = 98;		// 'b'
-			month[i++] = 101;		// 'e'
-			month[i++] = 114;		// 'r'
+			month = Month11;
 			break;
 		case 12:
-			month[i++] = 68;		// 'D'
-			month[i++] = 101;		// 'e'
-			month[i++] = 99;		// 'c'
-			month[i++] = 101;		// 'e'
-			month[i++] = 109;		// 'm'
-			month[i++] = 98;		// 'b'
-			month[i++] = 101;		// 'e'
-			month[i++] = 114;		// 'r'
+			month = Month12;
 			break;
 		}
-		month[i] = 0; // '/0'
 
-		i = 0; // reset i
-
+		int i = 0;
+		
 		/* Case: 'B' or 'b' */
 		if (type == 66 || type == 98) {
-			while (month[i] != 0) { // Month
-				str_output[i++] = month[i];
+			// Month
+			while (month[i] != 0) {
+				TIME[i] = month[i];
+				++i;
 			}
-			str_output[i++] = 32; // 32: ' '
-
+			TIME[i] = 32;		// 32: ' '
+			++i;
+			
+			// Month_DD,_
 			int j = 0;
-			while (TIME[j] != 47) { // 47: '/'
-				str_output[i++] = TIME[j++];
+			while (j < 2) {
+				TIME[i] = str[j];
+				++i;
+				++j;
 			}
-			str_output[i++] = 44; // Month DD,
-			str_output[i++] = 32;
-
-			j = 6; // YYYY
-			while (j < 11) { // Month DD, YYYY + '/0'
-				str_output[i++] = TIME[j++];
+			TIME[i] = 44;		// 44: ','
+			++i;
+			TIME[i] = 32;		// 32: ' '
+			++i;
+			
+			// Month_DD,_YYYY + '/0'
+			j = 6;
+			while (j < 11) {
+				TIME[i] = str[j];
+				++i;
+				++j;
 			}
 		}
 
 		/* Case: 'C' or 'c' */
 		if (type == 67 || type == 99) {
 			int j = 0;
-			while (TIME[j] != 47) { // 47: '/'
-				str_output[i++] = TIME[j++];
+			while (j < 2) {
+				TIME[i] = str[j];
+				++i;
+				++j;
 			}
-			str_output[i++] = 32; // DD
+			TIME[i] = 32; // DD_
+			++i;
 
 			j = 0;
-			while (month[j] != 0) { // DD Month
-				str_output[i++] = month[j++];
+			while (month[j] != 0) { 	// DD Month
+				TIME[i] = month[j];
+				++i;
+				++j;
 			}
-			str_output[i++] = 44; // DD Month,
-			str_output[i++] = 32;
+			str_output[i] = 44; 	// DD Month,
+			++i;
+			str_output[i] = 32;
+			++i;
 
 			j = 6; // YYYY
-			while (j < 11) { // DD Month, YYYY + '/0'
-				str_output[i++] = TIME[j++];
+			while (j < 11) { 	// DD Month, YYYY + '/0'
+				TIME[i] = str[j];
+				++i;
+				++j;
 			}
-		}
-	}
-	else { /* Other case: return TIME */
-		int i = 0;
-		while (i < 11) {
-			str_output[i++] = TIME[i];
 		}
 	}
 	
-	return str_output;
+	delete str;
+	
+	return TIME;
 }
 
 int checkInput(char* str_input, int n) {
