@@ -248,7 +248,7 @@ void printNearLeapYear(char* TIME) {
 }
 
 char* Convert(char* TIME, char type) {	// size of str TIME must be 18
-	char* str = new char[11];
+	char str[12];
 	
 	int i = 0;
 	while (i < 11) {
@@ -371,9 +371,9 @@ char* Convert(char* TIME, char type) {	// size of str TIME must be 18
 				++i;
 				++j;
 			}
-			str_output[i] = 44; 	// DD Month,
+			TIME[i] = 44; 	// DD Month,
 			++i;
-			str_output[i] = 32;
+			TIME[i] = 32;
 			++i;
 
 			j = 6; // YYYY
@@ -384,8 +384,6 @@ char* Convert(char* TIME, char type) {	// size of str TIME must be 18
 			}
 		}
 	}
-	
-	delete str;
 	
 	return TIME;
 }
