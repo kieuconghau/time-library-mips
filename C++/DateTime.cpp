@@ -206,48 +206,28 @@ int GetTime(char* TIME_1, char* TIME_2) {
 }
 
 void printNearLeapYear(char* TIME) {
-	int leapYear = LeapYear(TIME);
-
-	if (leapYear == 1) {
-		int count = 0;
-		int year = Year(TIME) + 1;
-
-		/* Find 2 following leap years */
-		while (count < 2) {
-			int flag = isLeap(year);
-			if (flag == 1) {
-				cout << year << " ";
-				count += 1;
-			}
-			year += 1;
-		}
-	}
-	else {
-		/* Find previous leap year */
-		int year = Year(TIME) - 1;
-		while (true) {
-			int flag = isLeap(year);
-			if (flag == 1) {
-				cout << year << " ";
-				break;
-			}
-			year -= 1;
-		}
-
-		/* Find following leap year */
-		year = Year(TIME) + 1;
-		while (true) {
-			int flag = isLeap(year);
-			if (flag == 1) {
-				cout << year << " ";
-				break;
-			}
-			year += 1;
+	int year = Year(TIME);
+	int i = 0;
+	int d;
+	
+	if (LeapYear(TIME) == 1)
+		d = 4;
+	else
+		d = 1;
+	
+	while (i < 2)
+	{
+		year += d;
+		if (isLeap(year) == 1)
+		{
+			++i;
+			cout << year;
+			cout << endl;
 		}
 	}
 }
 
-char* Convert(char* TIME, char type) {	// size of str TIME must be 18
+char* Convert(char* TIME, char type) {	// size of str TIME must be at least 20
 	char str[12];
 	
 	int i = 0;
