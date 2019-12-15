@@ -232,11 +232,11 @@ CheckDay_return:
 	.data
 	.text
 CheckMonth:
-	add  $v0, $zero, $zero
+	addi $v0, $zero, 1
 	addi $t0, $zero, 12
 	slt  $t1, $t0, $a0
 	beq  $t1, $zero, CheckMonth_return
-	addi $v0, $zero, 1
+	add  $v0, $zero, $zero
 CheckMonth_return:
 	jr   $ra
 
