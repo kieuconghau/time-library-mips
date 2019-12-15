@@ -22,7 +22,7 @@ int GetTime(char* TIME_1, char* TIME_2);
 
 void printNearLeapYear(char* TIME);
 
-char* Convert(char* TIME, char type, char* str_output);
+char* Convert(char* TIME, char type);
 
 int checkInput(char* str_input, int n);
 int checkMonth(char* str_input);
