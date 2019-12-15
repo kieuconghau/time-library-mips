@@ -1,10 +1,14 @@
 ##### int main()
 .data
-str:	.asciiz "05/09/1796"
+str:	.asciiz "28/02/1800"
 .text
 Main:
 	la   $a0, str
-	jal  PrintNearLeapYear
+	jal  Weekday
+	
+	add  $a0, $zero, $v0
+	li   $v0, 4
+	syscall
 	
 	# Exit
 	li   $v0, 10
@@ -489,4 +493,155 @@ PrintNearLeapYear_return:
 	lw   $s0, 8($sp)
 	addi $sp, $sp, 12
 
+	jr   $ra
+
+
+##### char* Weekday(char* TIME)
+.data
+weekday0: .asciiz "Sun"
+weekday1: .asciiz "Mon"
+weekday2: .asciiz "Tues"
+weekday3: .asciiz "Wed"
+weekday4: .asciiz "Thurs"
+weekday5: .asciiz "Fri"
+weekday6: .asciiz "Sat"
+.text
+Weekday:
+	addi $sp, $sp, -20
+	sw   $s0, 16($sp)			# t
+	sw   $s1, 12($sp)			# d
+	sw   $s2, 8($sp)			# m
+	sw   $s3, 4($sp)			# y
+	sw   $s4, 0($sp)			# s
+	
+	addi $sp, $sp, -48
+	add  $s0, $zero, $sp
+	addi $t0, $zero, 0
+	sw   $t0, 0($s0)
+	addi $t0, $zero, 3
+	sw   $t0, 4($s0)
+	addi $t0, $zero, 2
+	sw   $t0, 8($s0)
+	addi $t0, $zero, 5
+	sw   $t0, 12($s0)
+	addi $t0, $zero, 0
+	sw   $t0, 16($s0)
+	addi $t0, $zero, 3
+	sw   $t0, 20($s0)
+	addi $t0, $zero, 5
+	sw   $t0, 24($s0)
+	addi $t0, $zero, 1
+	sw   $t0, 28($s0)
+	addi $t0, $zero, 4
+	sw   $t0, 32($s0)
+	addi $t0, $zero, 6
+	sw   $t0, 36($s0)
+	addi $t0, $zero, 2
+	sw   $t0, 40($s0)
+	addi $t0, $zero, 4
+	sw   $t0, 44($s0)
+	
+	addi $sp, $sp, -8
+	sw   $ra, 4($sp)
+	sw   $a0, 0($sp)
+	jal  Day				# $a0: TIME
+	lw   $a0, 0($sp)
+	lw   $ra, 4($sp)
+	addi $sp, $sp, 8
+	add  $s1, $zero, $v0			# $s1: d = Day(TIME)
+	
+	addi $sp, $sp, -8
+	sw   $ra, 4($sp)
+	sw   $a0, 0($sp)
+	jal  Month				# $a0: TIME
+	lw   $a0, 0($sp)
+	lw   $ra, 4($sp)
+	addi $sp, $sp, 8
+	add  $s2, $zero, $v0			# $s2: m = Month(TIME)
+	
+	addi $sp, $sp, -8
+	sw   $ra, 4($sp)
+	sw   $a0, 0($sp)
+	jal  Year				# $a0: TIME
+	lw   $a0, 0($sp)
+	lw   $ra, 4($sp)
+	addi $sp, $sp, 8
+	add  $s3, $zero, $v0			# $s3: y = Year(TIME)
+
+	slti $t0, $s2, 3
+	beq  $t0, $zero, Weekday_skip
+	addi $s3, $s3, -1			# if (m < 3) --y
+	
+Weekday_skip:
+	add  $s4, $zero, $s3			# $s4: s = y
+	
+	addi $t0, $zero, 4
+	div  $s3, $t0				# y / 4
+	mflo $t0
+	add  $s4, $s4, $t0			# s += y / 4
+	
+	addi $t0, $zero, 100
+	div  $s3, $t0				# y / 100
+	mflo $t0
+	sub  $s4, $s4, $t0			# s -= y / 100
+	
+	addi $t0, $zero, 400
+	div  $s3, $t0				# y / 400
+	mflo $t0
+	add  $s4, $s4, $t0			# s += y / 400
+
+	addi $t0, $s2, -1			# m - 1
+	sll  $t0, $t0, 2			# 4*(m - 1)
+	add  $t0, $s0, $t0			# t + 4*(m - 1)
+	lw   $t0, 0($t0)			# t[m - i]
+	add  $s4, $s4, $t0			# s += t[m - 1]
+	
+	add  $s4, $s4, $s1			# s += d
+	
+	addi $t0, $zero, 7
+	div  $s4, $t0				# s % 7
+	mfhi $s4				# s %= 7
+	
+	# Switch(s)
+	bne  $s4, $zero, Weekday_switch_case_1
+	la   $v0, weekday0
+	j    Weekday_return
+Weekday_switch_case_1:
+	addi $t0, $s4, -1
+	bne  $t0, $zero, Weekday_switch_case_2
+	la   $v0, weekday1
+	j    Weekday_return
+Weekday_switch_case_2:
+	addi $t0, $s4, -2
+	bne  $t0, $zero, Weekday_switch_case_3
+	la   $v0, weekday2
+	j    Weekday_return
+Weekday_switch_case_3:
+	addi $t0, $s4, -3
+	bne  $t0, $zero, Weekday_switch_case_4
+	la   $v0, weekday3
+	j    Weekday_return
+Weekday_switch_case_4:
+	addi $t0, $s4, -4
+	bne  $t0, $zero, Weekday_switch_case_5
+	la   $v0, weekday4
+	j    Weekday_return
+Weekday_switch_case_5:
+	addi $t0, $s4, -5
+	bne  $t0, $zero, Weekday_switch_case_6
+	la   $v0, weekday5
+	j    Weekday_return
+Weekday_switch_case_6:
+	la   $v0, weekday6
+
+Weekday_return:
+	addi $sp, $sp, 48
+
+	sw   $s0, 16($sp)
+	sw   $s1, 12($sp)
+	sw   $s2, 8($sp)
+	sw   $s3, 4($sp)
+	sw   $s4, 0($sp)	
+	addi $sp, $sp, 20
+	
 	jr   $ra
