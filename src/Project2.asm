@@ -181,8 +181,49 @@ Date:
 day_in_month: .word 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 	.text
 CheckDay:
+	addi $sp, $sp, -8
+	sw   $a0, 0($sp)
+	sw   $ra, 4($sp)
 
+	beq  $a0, $zero, CheckDay_setFalse # If day == 0, return false
 
+	# Check leap year
+	add  $a0, $a2, $zero
+	jal  IsLeap
+	add  $t0, $v0, $zero
+
+	lw   $a0, 0($sp)   # Load day from stack
+	addi $v0, $zero, 1 # Initialize return value = true
+
+	beq  $t0, $zero, CheckDay_normalCase # Case year is not leap
+
+	addi $t0, $zero, 2
+	bne  $a1, $t0, CheckDay_normalCase # Case month is not February
+
+	# Case year is leap, and month is February
+	addi $t0, $zero, 29
+	slt  $t1, $t0, $a0
+	bne  $t1, $zero, CheckDay_setFalse
+
+	j    CheckDay_return
+
+CheckDay_normalCase:
+	la   $t0, day_in_month # $t0 = address of day_in_month array
+	addi $t1, $a1, -1      # $t1 = month - 1
+	sll  $t1, $t1, 2
+	add  $t1, $t1, $t0
+	lw   $t1, 0($t1)       # $t1 = day_in_month[month - 1]
+
+	# Check if day > day_in_month[month - 1]
+	slt  $t0, $t1, $a0
+	beq  $t0, $zero, CheckDay_return
+
+CheckDay_setFalse:
+	add  $v0, $zero, $zero
+
+CheckDay_return:
+	lw   $ra, 4($sp)
+	addi $sp, $sp, 8
 	jr   $ra
 
 ########################################
@@ -286,5 +327,5 @@ StrToInt:
 ########################################
 	.data
 	.text
-LeapYear:
+IsLeap:
 	jr   $ra
