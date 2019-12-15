@@ -99,71 +99,45 @@ int LeapYear(char* TIME) {
 	return isLeap(year);
 }
 
-char* Weekday(char* TIME, char* str_output) {
-	int MonthTable[12] = { 0,3,3,6,1,4,6,2,5,0,3,5 };
-
+char* Weekday(char* TIME) {
+	// Stored in .data (MIPS)
+	static char weekday0[] = "Sun";
+	static char weekday1[] = "Mon";
+	static char weekday2[] = "Tues";
+	static char weekday3[] = "Wed";
+	static char weekday4[] = "Thurs";
+	static char weekday5[] = "Fri";
+	static char weekday6[] = "Sat";
+	
+	int t[12] = { 0, 3, 2, 5, 0, 3, 
+                      5, 1, 4, 6, 2, 4 };
+	
 	int d = Day(TIME);
-
-	int m, month = Month(TIME), leapYear = LeapYear(TIME);
-	if (leapYear == 1) {
-		if (month == 1) m = 6;
-		if (month == 2) m = 2;
-	}
-	else m = MonthTable[month - 1];
-
-	int year = Year(TIME);
-	int y = year % 100;
-	int c = year / 100 + 1;
-	int q = y / 4;
-
-	int sum = d + m + y + q + c - 1;
-	int weekday = sum % 7;
-
-	int i = 0;
-	switch (weekday) {
+	int m = Month(TIME);
+	int y = Year(TIME);
+	
+	if (m < 3)
+		--y;
+	
+	int s = y + y / 4 - y / 100 + y / 400 + t[m - 1] + d;
+	
+	switch(s % 7)
+	{
 	case 0:
-		str_output[i++] = 83;		// 'S'
-		str_output[i++] = 117;		// 'u'
-		str_output[i++] = 110;		// 'n'
-		break;
+		return weekday0;
 	case 1:
-		str_output[i++] = 77;		// 'M'
-		str_output[i++] = 111;		// 'o'
-		str_output[i++] = 110;		// 'n'
-		break;
+		return weekday1;
 	case 2:
-		str_output[i++] = 84;		// 'T'
-		str_output[i++] = 117;		// 'u'
-		str_output[i++] = 101;		// 'e'
-		str_output[i++] = 115;		// 's'
-		break;
+		return weekday2;
 	case 3:
-		str_output[i++] = 87;		// 'W'
-		str_output[i++] = 101;		// 'e'
-		str_output[i++] = 100;		// 'd'
-		break;
+		return weekday3;
 	case 4:
-		str_output[i++] = 84;		// 'T'
-		str_output[i++] = 104;		// 'h'
-		str_output[i++] = 117;		// 'u'
-		str_output[i++] = 114;		// 'r'
-		str_output[i++] = 115;		// 's'
-		break;
+		return weekday4;
 	case 5:
-		str_output[i++] = 70;		// 'F'
-		str_output[i++] = 114;		// 'r'
-		str_output[i++] = 105;		// 'i'
-		break;
+		return weekday5;
 	case 6:
-		str_output[i++] = 83;		// 'S'
-		str_output[i++] = 97;		// 'a'
-		str_output[i++] = 116;		// 't'
-		break;
+		return weekday6;
 	}
-
-	str_output[i] = 0;				// '/0'
-
-	return str_output;
 }
 
 int GetTime(char* TIME_1, char* TIME_2) {
@@ -248,18 +222,18 @@ char* Convert(char* TIME, char type) {	// size of str TIME must be at least 20
 	}
 	else if (type == 66 || type == 98 || type == 67 || type == 99) {
 		// Stored in .data (MIPS)
-		char Month1[8] = "January";
-		char Month2[9] = "February";
-		char Month3[6] = "March";
-		char Month4[6] = "April";
-		char Month5[4] = "May";
-		char Month6[5] = "June";
-		char Month7[5] = "July";
-		char Month8[7] = "August";
-		char Month9[10] = "September";
-		char Month10[8] = "October";
-		char Month11[9] = "November";
-		char Month12[9] = "December";
+		static char Month1[8] = "January";
+		static char Month2[9] = "February";
+		static char Month3[6] = "March";
+		static char Month4[6] = "April";
+		static char Month5[4] = "May";
+		static char Month6[5] = "June";
+		static char Month7[5] = "July";
+		static char Month8[7] = "August";
+		static char Month9[10] = "September";
+		static char Month10[8] = "October";
+		static char Month11[9] = "November";
+		static char Month12[9] = "December";
 		
 		char* month;	// A pointer to Month1 or Month2 or ... Month12
 		switch (Month(TIME)) {
