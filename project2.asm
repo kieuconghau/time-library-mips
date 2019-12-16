@@ -4,12 +4,7 @@ str:	.asciiz "29/12/1800"
 .text
 Main:
 	la   $a0, str
-	li   $a1, 66
-	jal  Convert
-	
-	add  $a0, $zero, $v0
-	li   $v0, 4
-	syscall
+	jal  PrintNearLeapYear
 	
 	# Exit
 	li   $v0, 10
@@ -581,9 +576,6 @@ Convert_return:
 
 ##### void printNearLeapYear(char* TIME)
 PrintNearLeapYear:
-.data
-endl:	.asciiz "\n"
-.text
 						# $a0: TIME (char*)
 	addi $sp, $sp, -12
 	sw   $s0, 8($sp)
@@ -639,9 +631,15 @@ PrintNearLeapYear_loop_1:
 	syscall
 	
 	# cout << endl;
-	la   $a0, endl
+	addi $sp, $sp, -4
+	addi $t0, $zero, 10
+	sb   $t0, 0($sp)
+	addi $t0, $zero, 0
+	sb   $t0, 1($sp)
+	add  $a0, $zero, $sp
 	addi $v0, $zero, 4
 	syscall
+	addi $sp, $sp, 4
 	
 	sw   $a0, 0($sp)
 	addi $sp, $sp, 4
@@ -652,9 +650,9 @@ PrintNearLeapYear_continue_1:
 PrintNearLeapYear_end_1:
 	
 PrintNearLeapYear_return:
-	lw   $s2, 0($sp)
-	lw   $s1, 4($sp)
-	lw   $s0, 8($sp)
+	sw   $s0, 8($sp)
+	sw   $s1, 4($sp)
+	sw   $s2, 0($sp)
 	addi $sp, $sp, 12
 
 	jr   $ra
