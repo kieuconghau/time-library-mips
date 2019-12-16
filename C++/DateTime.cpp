@@ -221,57 +221,119 @@ char* Convert(char* TIME, char type) {	// size of str TIME must be at least 20
 		}
 	}
 	else if (type == 66 || type == 98 || type == 67 || type == 99) {
-		// Stored in .data (MIPS)
-		static char Month1[8] = "January";
-		static char Month2[9] = "February";
-		static char Month3[6] = "March";
-		static char Month4[6] = "April";
-		static char Month5[4] = "May";
-		static char Month6[5] = "June";
-		static char Month7[5] = "July";
-		static char Month8[7] = "August";
-		static char Month9[10] = "September";
-		static char Month10[8] = "October";
-		static char Month11[9] = "November";
-		static char Month12[9] = "December";
-		
-		char* month;	// A pointer to Month1 or Month2 or ... Month12
-		switch (Month(TIME)) {
+		char month[12];
+		int m = Month(TIME);
+
+		switch (m) {
 		case 1:
-			month = Month1;
+			month[0] = 74;		// 'J'
+			month[1] = 97;		// 'a'
+			month[2] = 110;		// 'n'
+			month[3] = 117;		// 'u'
+			month[4] = 97;		// 'a'
+			month[5] = 114;		// 'r'
+			month[6] = 121;		// 'y'
+			month[7] = 0;		// '/0'
 			break;
 		case 2:
-			month = Month2;
+			month[0] = 70;		// 'F'
+			month[1] = 101;		// 'e'
+			month[2] = 98;		// 'b'
+			month[3] = 114;		// 'r'
+			month[4] = 117;		// 'u'
+			month[5] = 97;		// 'a'
+			month[6] = 114;		// 'r'
+			month[7] = 121;		// 'y'
+			month[8] = 0;		// '/0'
 			break;
 		case 3:
-			month = Month3;
+			month[0] = 77;		// 'M'
+			month[1] = 97;		// 'a'
+			month[2] = 114;		// 'r'
+			month[3] = 99;		// 'c'
+			month[4] = 104;		// 'h'
+			month[5] = 0;		// '/0'
 			break;
 		case 4:
-			month = Month4;
+			month[0] = 65;		// 'A'
+			month[1] = 112;		// 'p'
+			month[2] = 114;		// 'r'
+			month[3] = 105;		// 'i'
+			month[4] = 108;		// 'l'
+			month[5] = 0;		// '/0'
 			break;
 		case 5:
-			month = Month5;
+			month[0] = 77;		// 'M'
+			month[1] = 97;		// 'a'
+			month[2] = 121;		// 'y'
+			month[3] = 0;		// '/0'
 			break;
 		case 6:
-			month = Month6;
+			month[0] = 74;		// 'J'
+			month[1] = 117;		// 'u'
+			month[2] = 110;		// 'n'
+			month[3] = 101;		// 'e'
+			month[4] = 0;		// '/0'
 			break;
 		case 7:
-			month = Month7;
+			month[0] = 74;		// 'J'
+			month[1] = 117;		// 'u'
+			month[2] = 108;		// 'l'
+			month[3] = 121;		// 'y'
+			month[4] = 0;		// '/0'
 			break;
 		case 8:
-			month = Month8;
+			month[0] = 65;		// 'A'
+			month[1] = 117;		// 'u'
+			month[2] = 103;		// 'g'
+			month[3] = 117;		// 'u'
+			month[4] = 115;		// 's'
+			month[5] = 116;		// 't'
+			month[6] = 0;		// '/0'
 			break;
 		case 9:
-			month = Month9;
+			month[0] = 83;		// 'S'
+			month[1] = 101;		// 'e'
+			month[2] = 112;		// 'p'
+			month[3] = 116;		// 't'
+			month[4] = 101;		// 'e'
+			month[5] = 109;		// 'm'
+			month[6] = 98;		// 'b'
+			month[7] = 101;		// 'e'
+			month[8] = 114;		// 'r'
+			month[9] = 0;		// '/0'
 			break;
 		case 10:
-			month = Month10;
+			month[0] = 79;		// 'O'
+			month[1] = 99;		// 'c'
+			month[2] = 116;		// 't'
+			month[3] = 111;		// 'o'
+			month[4] = 98;		// 'b'
+			month[5] = 101;		// 'e'
+			month[6] = 114;		// 'r'
+			month[7] = 0;		// '/0'
 			break;
 		case 11:
-			month = Month11;
+			month[0] = 78;		// 'N'
+			month[1] = 111;		// 'o'
+			month[2] = 118;		// 'v'
+			month[3] = 101;		// 'e'
+			month[4] = 109;		// 'm'
+			month[5] = 98;		// 'b'
+			month[6] = 101;		// 'e'
+			month[7] = 114;		// 'r'
+			month[8] = 0;		// '/0'
 			break;
 		case 12:
-			month = Month12;
+			month[0] = 68;		// 'D'
+			month[1] = 101;		// 'e'
+			month[2] = 99;		// 'c'
+			month[3] = 101;		// 'e'
+			month[4] = 109;		// 'm'
+			month[5] = 98;		// 'b'
+			month[6] = 101;		// 'e'
+			month[7] = 114;		// 'r'
+			month[8] = 0;		// '/0'
 			break;
 		}
 
