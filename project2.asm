@@ -1,10 +1,11 @@
 ##### int main()
 .data
-str:	.asciiz "28/02/1800"
+str:	.asciiz "29/12/1800"
 .text
 Main:
 	la   $a0, str
-	jal  Weekday
+	li   $a1, 66
+	jal  Convert
 	
 	add  $a0, $zero, $v0
 	li   $v0, 4
@@ -55,7 +56,6 @@ Day:
 	addi $sp, $sp, 4
 	jr   $ra
 	
-
 
 ##### int Month(char* TIME)
 Month:
@@ -132,20 +132,6 @@ LeapYear:
 
 
 ##### char* Convert(char* TIME, char type)
-.data
-month1:	 .asciiz "January"
-month2:  .asciiz "February"
-month3:  .asciiz "March"
-month4:  .asciiz "April"
-month5:  .asciiz "May"
-month6:  .asciiz "June"
-month7:  .asciiz "July"
-month8:  .asciiz "August"
-month9:	 .asciiz "September"
-month10: .asciiz "October"
-month11: .asciiz "November"
-month12: .asciiz "December"
-.text
 Convert:
 						# $a0: TIME (char*)
 						# $a1: type (char)
@@ -206,6 +192,9 @@ Convert_case_b_c:
 	sw   $s1, 0($sp)			# $s1: month (char*)
 	
 	addi $sp, $sp, -12
+	add  $s1, $zero, $sp
+	
+	addi $sp, $sp, -12
 	sw   $ra, 8($sp)
 	sw   $a0, 4($sp)
 	sw   $a1, 0($sp)
@@ -217,65 +206,237 @@ Convert_case_b_c:
 	
 	addi $t0, $v0, -1			# case 1
 	bne  $t0, $zero, Convert_switch_case_2
-	la   $s1, month1			# month = month1
+	# January
+	addi $t0, $zero, 74
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 97
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 110
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 117
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 97
+	sb   $t0, 4($s1)
+	addi $t0, $zero, 114
+	sb   $t0, 5($s1)
+	addi $t0, $zero, 121
+	sb   $t0, 6($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 7($s1)
 	j    Convert_switch_end
 Convert_switch_case_2:
 	addi $t0, $v0, -2			# case 2
 	bne  $t0, $zero, Convert_switch_case_3
-	la   $s1, month2			# month = month2
+	# February
+	addi $t0, $zero, 70
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 98
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 114
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 117
+	sb   $t0, 4($s1)
+	addi $t0, $zero, 97
+	sb   $t0, 5($s1)
+	addi $t0, $zero, 114
+	sb   $t0, 6($s1)
+	addi $t0, $zero, 121
+	sb   $t0, 7($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 8($s1)
 	j    Convert_switch_end
 Convert_switch_case_3:
 	addi $t0, $v0, -3			# case 3
 	bne  $t0, $zero, Convert_switch_case_4
-	la   $s1, month3			# month = month3
+	# March
+	addi $t0, $zero, 77
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 97
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 114
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 99
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 104
+	sb   $t0, 4($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 5($s1)
 	j    Convert_switch_end
 Convert_switch_case_4:
 	addi $t0, $v0, -4			# case 4
 	bne  $t0, $zero, Convert_switch_case_5
-	la   $s1, month4			# month = month4
+	# April
+	addi $t0, $zero, 65
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 112
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 114
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 105
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 108
+	sb   $t0, 4($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 5($s1)
 	j    Convert_switch_end
 Convert_switch_case_5:
 	addi $t0, $v0, -5			# case 5
 	bne  $t0, $zero, Convert_switch_case_6
-	la   $s1, month5			# month = month5
+	# May
+	addi $t0, $zero, 77
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 97
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 121
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 3($s1)
 	j    Convert_switch_end
 Convert_switch_case_6:
 	addi $t0, $v0, -6			# case 6
 	bne  $t0, $zero, Convert_switch_case_7
-	la   $s1, month6			# month = month6
+	# June
+	addi $t0, $zero, 74
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 117
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 110
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 4($s1)
 	j    Convert_switch_end
 Convert_switch_case_7:
 	addi $t0, $v0, -7			# case 7
 	bne  $t0, $zero, Convert_switch_case_8
-	la   $s1, month7			# month = month7
+	# July
+	addi $t0, $zero, 74
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 117
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 108
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 121
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 4($s1)
 	j    Convert_switch_end
 Convert_switch_case_8:
 	addi $t0, $v0, -8			# case 8
 	bne  $t0, $zero, Convert_switch_case_9
-	la   $s1, month8			# month = month8
+	# August
+	addi $t0, $zero, 65
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 117
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 103
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 117
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 115
+	sb   $t0, 4($s1)
+	addi $t0, $zero, 116
+	sb   $t0, 5($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 6($s1)
 	j    Convert_switch_end
 Convert_switch_case_9:
 	addi $t0, $v0, -9			# case 9
 	bne  $t0, $zero, Convert_switch_case_10
-	la   $s1, month9			# month = month9
+	# September
+	addi $t0, $zero, 83
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 112
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 116
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 4($s1)
+	addi $t0, $zero, 109
+	sb   $t0, 5($s1)
+	addi $t0, $zero, 98
+	sb   $t0, 6($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 7($s1)
+	addi $t0, $zero, 114
+	sb   $t0, 8($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 9($s1)
 	j    Convert_switch_end
 Convert_switch_case_10:
 	addi $t0, $v0, -10			# case 10
 	bne  $t0, $zero, Convert_switch_case_11
-	la   $s1, month10			# month = month10
+	# October
+	addi $t0, $zero, 79
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 99
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 116
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 111
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 98
+	sb   $t0, 4($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 5($s1)
+	addi $t0, $zero, 114
+	sb   $t0, 6($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 7($s1)
 	j    Convert_switch_end
 Convert_switch_case_11:
 	addi $t0, $v0, -11			# case 11
 	bne  $t0, $zero, Convert_switch_case_12
-	la   $s1, month11			# month = month11
+	# November
+	addi $t0, $zero, 78
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 111
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 118
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 109
+	sb   $t0, 4($s1)
+	addi $t0, $zero, 98
+	sb   $t0, 5($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 6($s1)
+	addi $t0, $zero, 114
+	sb   $t0, 7($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 8($s1)
 	j    Convert_switch_end
 Convert_switch_case_12:
 	addi $t0, $v0, -12			# case 12
 	bne  $t0, $zero, Convert_switch_end
-	la   $s1, month12			# month = month12
+	# December
+	addi $t0, $zero, 68
+	sb   $t0, 0($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 1($s1)
+	addi $t0, $zero, 99
+	sb   $t0, 2($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 3($s1)
+	addi $t0, $zero, 109
+	sb   $t0, 4($s1)
+	addi $t0, $zero, 98
+	sb   $t0, 5($s1)
+	addi $t0, $zero, 101
+	sb   $t0, 6($s1)
+	addi $t0, $zero, 114
+	sb   $t0, 7($s1)
+	addi $t0, $zero, 0
+	sb   $t0, 8($s1)
 Convert_switch_end:
 	
-	
+	# Case B
 	addi $t0, $a1, -66
 	beq  $t0, $zero, Convert_case_b
 	addi $t0, $a1, -98
@@ -342,6 +503,7 @@ Convert_case_b_loop_3:
 Convert_case_b_end_3:
 	j    Convert_case_b_c_end
 	
+	# Case C
 Convert_case_c:
 	addi $t0, $zero, 0			# St0: i = 0
 	addi $t1, $zero, 0			# St1: j = 0
@@ -405,6 +567,8 @@ Convert_case_c_loop_3:
 Convert_case_c_end_3:
 	
 Convert_case_b_c_end:
+	addi $sp, $sp, 12
+
 	lw   $s1, 0($sp)
 	addi $sp, $sp, 4
 	
