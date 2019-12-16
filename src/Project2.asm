@@ -1,6 +1,6 @@
 # Main routine
 	.data
-TIME: .space 10
+TIME: .space 20
 	.text
 	.globl Main
 Main:
@@ -167,9 +167,159 @@ InputDate_store:
 	jr   $ra
 
 ########################################
+# Store day, month and year in string TIME
+# $a0: day in number
+# $a1: month in number
+# $a2: year in number
+# $a3: address of string TIME
 	.data
 	.text
 Date:
+	addi $sp, $sp, -24 # Leave 8 bytes for the converted string
+	sw   $a0, 8($sp)
+	sw   $a1, 12($sp)
+	sw   $ra, 16($sp)
+	sw   $s0, 20($sp)
+
+	add  $s0, $zero, $zero # $s0: Next position to be inserted in TIME
+
+# Insert day
+	# Convert day from int to string form
+	lw   $a0, 8($sp)
+	addi $a1, $sp, 0
+	jal  IntToStr
+	add  $t0, $v0, $zero
+
+	add  $t1, $zero, $zero # $t1: Position of next char to be retrieved from day string
+
+	# Check if day < 10 (i.e. day has 1 digit)
+	lw   $t2, 8($sp)
+	slti $t3, $t2, 10
+	beq  $t3, $zero, Date_insertDay
+
+	# If it's true, insert a 0 at the beginning.
+	add  $t2, $a3, $s0
+	sb   $zero, 0($t2)
+	addi $s0, $s0, 1
+
+Date_insertDay:
+	# Read the next unread char in day string
+	add  $t2, $t0, $t1
+	lb   $t2, 0($t2)
+
+	# If it's null char (i.e. the end of day string is reached), break.
+	beq  $t2, $zero, Date_endInsertDay
+
+	# Else, copy the char into TIME string
+	add  $t3, $a3, $s0
+	sb   $t2, 0($t3)
+
+	# Move to next position of TIME and day strings
+	addi $s0, $s0, 1
+	addi $t1, $t1, 1
+	j    Date_insertDay
+
+Date_endInsertDay:
+	# Insert char '/'
+	add  $t0, $a3, $s0
+	addi $t1, $zero, 47
+	sb   $t1, 0($t0)
+	addi $s0, $s0, 1
+
+# Insert month
+	# Convert month from int to string form
+	lw   $a0, 12($sp)
+	addi $a1, $sp, 0
+	jal  IntToStr
+	add  $t0, $v0, $zero
+
+	add  $t1, $zero, $zero # $t1: Position of next char to be retrieved from month string
+
+	# Check if month < 10 (i.e. month has 1 digit)
+	lw   $t2, 12($sp)
+	slti $t3, $t2, 10
+	beq  $t3, $zero, Date_insertMonth
+
+	# If it's true, insert a 0 at the beginning.
+	add  $t2, $a3, $s0
+	sb   $zero, 0($t2)
+	addi $s0, $s0, 1
+
+Date_insertMonth:
+	# Read the next unread char in month string
+	add  $t2, $t0, $t1
+	lb   $t2, 0($t2)
+
+	# If it's null char (i.e. the end of month string is reached), break.
+	beq  $t2, $zero, Date_endInsertMonth
+
+	# Else, copy the char into TIME string
+	add  $t3, $a3, $s0
+	sb   $t2, 0($t3)
+
+	# Move to next position of TIME and month strings
+	addi $s0, $s0, 1
+	addi $t1, $t1, 1
+	j    Date_insertMonth
+
+Date_endInsertMonth:
+	# Insert char '/'
+	add  $t0, $a3, $s0
+	addi $t1, $zero, 47
+	sb   $t1, 0($t0)
+	addi $s0, $s0, 1
+
+# Insert year
+	# Convert year from int to string form
+	add  $a0, $a2, $zero
+	addi $a1, $sp, 0
+	jal  IntToStr
+	add  $t0, $v0, $zero
+
+	add  $t1, $zero, $zero # $t1: Position of next char to be retrieved from year string
+
+	addi $t2, $zero, 1000
+Date_fillZeroBeforeYear:
+	# Check if year < $t2 (i.e. year has less than (log($t2) + 1) digit)
+	slt  $t3, $a2, $t2
+	beq  $t3, $zero, Date_insertYear
+
+	# If it's true, insert a 0 at the beginning.
+	add  $t3, $a3, $s0
+	sb   $zero, 0($t3)
+	addi $s0, $s0, 1
+
+	addi $t3, $zero, 10
+	div  $t2, $t3
+	mflo $t2
+	j    Date_fillZeroBeforeYear
+
+Date_insertYear:
+	# Read the next unread char in year string
+	add  $t2, $t0, $t1
+	lb   $t2, 0($t2)
+
+	# If it's null char (i.e. the end of year string is reached), break.
+	beq  $t2, $zero, Date_endInsertYear
+
+	# Else, copy the char into TIME string
+	add  $t3, $a3, $s0
+	sb   $t2, 0($t3)
+
+	# Move to next position of TIME and year strings
+	addi $s0, $s0, 1
+	addi $t1, $t1, 1
+	j    Date_insertYear
+
+Date_endInsertYear:
+	# Insert null char
+	add  $t0, $a3, $s0
+	sb   $zero, 0($t0)
+
+# Return
+	lw   $ra, 16($sp)
+	lw   $s0, 20($sp)
+	addi $sp, $sp, 24
 	jr   $ra
 
 ########################################
@@ -324,6 +474,15 @@ StringLength_while:
 
 	j    StringLength_while
 StringLength_return:
+	jr   $ra
+
+########################################
+# Convert integer to string
+# $a0: integer
+# $a1: address of output string
+	.data
+	.text
+IntToStr:
 	jr   $ra
 
 ##### int StrToInt(char* str_input, int n)
