@@ -343,12 +343,34 @@ Date_endInsertYear:
 # $a1: month in number
 # $a2: year in number
 	.data
-day_in_month: .word 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 	.text
 CheckDay:
-	addi $sp, $sp, -8
-	sw   $a0, 0($sp)
-	sw   $ra, 4($sp)
+	addi $sp, $sp, -56
+	# Reserve 48 bytes to store an array of integers
+	# containing the number of days in each month.
+	sw   $a0, 48($sp)
+	sw   $ra, 52($sp)
+
+	# Load Jan, Mar, May, Jul, Aug, Oct, Dec with 31
+	addi $t0, $zero, 31
+	sw   $t0, 0($sp)    # Jan
+	sw   $t0, 8($sp)    # Mar
+	sw   $t0, 16($sp)   # May
+	sw   $t0, 24($sp)   # Jul
+	sw   $t0, 28($sp)   # Aug
+	sw   $t0, 36($sp)   # Oct
+	sw   $t0, 44($sp)   # Dec
+
+	# Load Apr, Jun, Sep, Nov with 30
+	addi $t0, $zero, 30
+	sw   $t0, 12($sp)   # Apr
+	sw   $t0, 20($sp)   # Jun
+	sw   $t0, 32($sp)   # Sep
+	sw   $t0, 40($sp)   # Nov
+
+	# Load Feb with 28
+	addi $t0, $zero, 28
+	sw   $t0, 4($sp)
 
 	beq  $a0, $zero, CheckDay_setFalse # If day == 0, return false
 
@@ -357,7 +379,7 @@ CheckDay:
 	jal  IsLeap
 	add  $t0, $v0, $zero
 
-	lw   $a0, 0($sp)   # Load day from stack
+	lw   $a0, 48($sp)   # Load day from stack
 	addi $v0, $zero, 1 # Initialize return value = true
 
 	beq  $t0, $zero, CheckDay_normalCase # Case year is not leap
@@ -373,7 +395,7 @@ CheckDay:
 	j    CheckDay_return
 
 CheckDay_normalCase:
-	la   $t0, day_in_month # $t0 = address of day_in_month array
+	addi $t0, $sp, 0       # $t0 = address of array containing num of days in each month
 	addi $t1, $a1, -1      # $t1 = month - 1
 	sll  $t1, $t1, 2
 	add  $t1, $t1, $t0
@@ -387,8 +409,8 @@ CheckDay_setFalse:
 	add  $v0, $zero, $zero
 
 CheckDay_return:
-	lw   $ra, 4($sp)
-	addi $sp, $sp, 8
+	lw   $ra, 52($sp)
+	addi $sp, $sp, 56
 	jr   $ra
 
 ########################################
