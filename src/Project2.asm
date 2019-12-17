@@ -87,6 +87,11 @@ InputDate_input:
 	jal  StrToInt
 	add  $s0, $v0, $zero
 
+	# Check if 'year' is a valid year
+	add  $a0, $s0, $zero
+	jal  CheckYear
+	beq  $v0, $zero, InputDate_error
+
 
 	# Find the length of inputted 'month' string
 	la   $a0, month
@@ -409,11 +414,14 @@ CheckMonth_return:
 
 ########################################
 # Check year validity
+# $a0: year in number
 	.data
 	.text
 CheckYear:
-
-
+	addi $v0, $zero, 1
+	bne  $a0, $zero, CheckYear_return
+	add  $v0, $zero, $zero
+CheckYear_return:
 	jr   $ra
 
 ########################################
@@ -424,6 +432,10 @@ CheckYear:
 	.text
 CheckInput:
 	addi $v0, $zero, 1     # Return value
+
+	# If string is empty, return false
+	beq  $a1, $zero, CheckInput_setFalse
+
 	add  $t0, $zero, $zero # $t0 = Variable i
 CheckInput_while:
 	# If i is not less than string's length, return
