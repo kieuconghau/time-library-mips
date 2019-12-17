@@ -203,7 +203,8 @@ Date:
 
 	# If it's true, insert a 0 at the beginning.
 	add  $t2, $a3, $s0
-	sb   $zero, 0($t2)
+	addi $t3, $zero, 48
+	sb   $t3, 0($t2)
 	addi $s0, $s0, 1
 
 Date_insertDay:
@@ -246,7 +247,8 @@ Date_endInsertDay:
 
 	# If it's true, insert a 0 at the beginning.
 	add  $t2, $a3, $s0
-	sb   $zero, 0($t2)
+	addi $t3, $zero, 48
+	sb   $t3, 0($t2)
 	addi $s0, $s0, 1
 
 Date_insertMonth:
@@ -290,7 +292,8 @@ Date_fillZeroBeforeYear:
 
 	# If it's true, insert a 0 at the beginning.
 	add  $t3, $a3, $s0
-	sb   $zero, 0($t3)
+	addi $t4, $zero, 48
+	sb   $t4, 0($t3)
 	addi $s0, $s0, 1
 
 	addi $t3, $zero, 10
@@ -496,13 +499,14 @@ StringLength_return:
 # Get each character in the temp string from right to left,
 # and store them in the output string from left to right.
 IntToStr:
-	# Store existed data in saved registers to stack
-	addi $sp, $sp, -20
+	# Store existed data in $s and $ra registers to stack
+	addi $sp, $sp, -24
 	sw   $s0, 0($sp)
 	sw   $s1, 4($sp)
 	sw   $s2, 8($sp)
 	sw   $s3, 12($sp)
 	sw   $s4, 16($sp)
+	sw   $ra, 20($sp)
 
 	add  $s0, $a0, $zero # $s0: the input integer
 	add  $s1, $a1, $zero # $s1: address of output string
@@ -575,19 +579,21 @@ IntToStr_endRevert:
 	add  $t1, $s1, $s2
 	sb   $zero, 0($t1)
 
+	add  $v0, $s1, $zero # Return the address of output string
+
 	lw   $t0, 0($sp)   # Load the number of bytes allocated for temp string from stack
 	addi $sp, $sp, 4
 	add  $sp, $sp, $t0 # Deallocate memory of temp string
 
-	# Restore saved registers to original state
+	# Restore $s and $ra registers to original state
 	lw   $s0, 0($sp)
 	lw   $s1, 4($sp)
 	lw   $s2, 8($sp)
 	lw   $s3, 12($sp)
 	lw   $s4, 16($sp)
-	addi $sp, $sp, 20
+	lw   $ra, 20($sp)
+	addi $sp, $sp, 24
 
-	add  $v0, $s1, $zero # Return the address of output string
 	jr   $ra
 
 ########################################
