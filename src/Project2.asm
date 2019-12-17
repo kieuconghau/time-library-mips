@@ -21,18 +21,19 @@ Main:
 prompt1: .asciiz "Nhap ngay DAY: "
 prompt2: .asciiz "Nhap thang MONTH: "
 prompt3: .asciiz "Nhap nam YEAR: "
-error:   .asciiz "Error: Invalid input."
-day:     .space 3
-month:   .space 3
-year:    .space 5
+error:   .asciiz "Du lieu khong hop le. Xin vui long nhap lai:\n"
 	.text
 InputDate:
-	addi $sp, $sp, -20
-	sw   $a0, 0($sp)
-	sw   $ra, 4($sp)
-	sw   $s0, 8($sp)
-	sw   $s1, 12($sp)
-	sw   $s2, 16($sp)
+	addi $sp, $sp, -36
+	# Reserve 16 bytes for the inputs:
+	# First 4 bytes for day input,
+	# next 4 bytes for month input and
+	# last 8 bytes for year input
+	sw   $a0, 16($sp)
+	sw   $ra, 20($sp)
+	sw   $s0, 24($sp)
+	sw   $s1, 28($sp)
+	sw   $s2, 32($sp)
 
 InputDate_input:
 	# Prompt user to input day
@@ -41,7 +42,7 @@ InputDate_input:
 	syscall
 
 	# Input day
-	la   $a0, day
+	addi $a0, $sp, 0
 	addi $a1, $zero, 3
 	addi $v0, $zero, 8
 	syscall
@@ -52,7 +53,7 @@ InputDate_input:
 	syscall
 
 	# Input month
-	la   $a0, month
+	addi $a0, $sp, 4
 	addi $a1, $zero, 3
 	addi $v0, $zero, 8
 	syscall
@@ -63,26 +64,26 @@ InputDate_input:
 	syscall
 
 	# Input year
-	la   $a0, year
+	addi $a0, $sp, 8
 	addi $a1, $zero, 5
 	addi $v0, $zero, 8
 	syscall
 
 
 	# Find the length of inputted 'year' string
-	la   $a0, year
+	addi $a0, $sp, 8
 	addi $a1, $zero, 5
 	jal  StringLength
 	add  $s0, $v0, $zero
 
 	# Check if the inputted 'year' is a number
-	la   $a0, year
+	addi $a0, $sp, 8
 	add  $a1, $s0, $zero
 	jal  CheckInput
 	beq  $v0, $zero, InputDate_error
 
 	# Convert 'year' from string to int
-	la   $a0, year
+	addi $a0, $sp, 8
 	add  $a1, $s0, $zero
 	jal  StrToInt
 	add  $s0, $v0, $zero
@@ -94,19 +95,19 @@ InputDate_input:
 
 
 	# Find the length of inputted 'month' string
-	la   $a0, month
+	addi $a0, $sp, 4
 	addi $a1, $zero, 3
 	jal  StringLength
 	add  $s1, $v0, $zero
 
 	# Check if the inputted 'month' is a number
-	la   $a0, month
+	addi $a0, $sp, 4
 	add  $a1, $s1, $zero
 	jal  CheckInput
 	beq  $v0, $zero, InputDate_error
 
 	# Convert 'month' from string to int
-	la   $a0, month
+	addi $a0, $sp, 4
 	add  $a1, $s1, $zero
 	jal  StrToInt
 	add  $s1, $v0, $zero
@@ -118,19 +119,19 @@ InputDate_input:
 
 
 	# Find the length of inputted 'day' string
-	la   $a0, day
+	addi $a0, $sp, 0
 	addi $a1, $zero, 3
 	jal  StringLength
 	add  $s2, $v0, $zero
 
 	# Check if the inputted 'day' is a number
-	la   $a0, day
+	addi $a0, $sp, 0
 	add  $a1, $s2, $zero
 	jal  CheckInput
 	beq  $v0, $zero, InputDate_error
 
 	# Convert 'day' from string to int
-	la   $a0, day
+	addi $a0, $sp, 0
 	add  $a1, $s2, $zero
 	jal  StrToInt
 	add  $s2, $v0, $zero
@@ -154,7 +155,7 @@ InputDate_error:
 
 InputDate_store:
 	# Load TIME address from stack
-	lw   $a0, 0($sp)
+	lw   $a0, 16($sp)
 	add  $t0, $a0, $zero
 
 	# Call Date routine
@@ -166,11 +167,11 @@ InputDate_store:
 	add  $v0, $v0, $zero
 
 	# Restore $ra, $s0, $s1, $s2 and $sp
-	lw   $ra, 4($sp)
-	lw   $s0, 8($sp)
-	lw   $s1, 12($sp)
-	lw   $s2, 16($sp)
-	addi $sp, $sp, 20
+	lw   $ra, 20($sp)
+	lw   $s0, 24($sp)
+	lw   $s1, 28($sp)
+	lw   $s2, 32($sp)
+	addi $sp, $sp, 36
 
 	# Return
 	jr   $ra
