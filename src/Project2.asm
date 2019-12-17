@@ -7,6 +7,10 @@ Main:
 	la   $a0, TIME
 	jal  InputDate
 
+	add  $a0, $v0, $zero
+	addi $v0, $zero, 4
+	syscall
+
 	# Exit
 	addi $v0, $zero, 10
 	syscall
@@ -317,6 +321,8 @@ Date_endInsertYear:
 	sb   $zero, 0($t0)
 
 # Return
+	add  $v0, $a3, $zero
+
 	lw   $ra, 16($sp)
 	lw   $s0, 20($sp)
 	addi $sp, $sp, 24
@@ -477,12 +483,134 @@ StringLength_return:
 	jr   $ra
 
 ########################################
-# Convert integer to string
-# $a0: integer
+# Convert non-negative integer to string
+# $a0: non-negative integer
 # $a1: address of output string
 	.data
 	.text
+# Method:
+# Step 1:
+# Get each digit of the integer from right to left,
+# and store them in a temporary string from left to right.
+# Step 2:
+# Get each character in the temp string from right to left,
+# and store them in the output string from left to right.
 IntToStr:
+	# Store existed data in saved registers to stack
+	addi $sp, $sp, -20
+	sw   $s0, 0($sp)
+	sw   $s1, 4($sp)
+	sw   $s2, 8($sp)
+	sw   $s3, 12($sp)
+	sw   $s4, 16($sp)
+
+	add  $s0, $a0, $zero # $s0: the input integer
+	add  $s1, $a1, $zero # $s1: address of output string
+
+	# Count the number of digits of the integer
+	add  $a0, $s0, $zero
+	jal  CountDigit
+
+	# Find the number of bytes needed to allocate for the temp string.
+	# It must be the lowest multiple of 4 which is greater than
+	# the number of digits of the integer.
+	# Method: Divide the number of digits by 4, get its ceiling,
+	# and multiply the ceiling by 4.
+	addi $t0, $zero, 4
+	div  $v0, $t0
+	mflo $t0
+	mfhi $t1
+	beq  $t1, $zero, IntToStr_jump
+	addi $t0, $t0, 1
+IntToStr_jump:
+	addi $t1, $zero, 4
+	mul  $t0, $t0, $t1
+	# $t0 now stores the number of bytes needed for allocation
+
+	# Allocate memory for temp string
+	sub  $sp, $sp, $t0
+	add  $s3, $sp, $zero # $s3: address of temp string
+
+	# Store the number of allocated bytes in stack
+	addi $sp, $sp, -4
+	sw   $t0, 0($sp)
+
+# Perform Step 1.
+	add  $s4, $zero, $zero # $s4: next position to be inserted in temp string
+IntToStr_convert:
+	add  $t0, $s3, $s4     # $t0: Address of next pos to be inserted
+
+	addi $t1, $zero, 10
+	div  $s0, $t1          # Divide integer by 10
+	mflo $s0               # Store the quotient back to integer
+	mfhi $t1               # Store the remainder to $t1
+	                       # $t1 now stores the lowest digit in the current integer.
+
+	addi $t1, $t1, 48      # Increase the digit by 48
+	                       # to convert it to a character
+	sb   $t1, 0($t0)       # Insert the character into the temp string
+
+	addi $s4, $s4, 1       # Move to next pos to be inserted in temp string
+
+	bne  $s0, $zero, IntToStr_convert # If integer is still greater than 0, repeat.
+
+# Perform Step 2.
+	add  $s2, $zero, $zero # $s2: next position to be inserted in output string
+IntToStr_revert:
+	beq  $s4, $zero, IntToStr_endRevert # If all char in temp string are read, break
+
+	addi $s4, $s4, -1      # Move to position of the char to be read in temp string
+	add  $t0, $s3, $s4     # $t0: Address of the position of the char to be read
+	lb   $t0, 0($t0)       # Read character and store it in $t0
+
+	add  $t1, $s1, $s2     # $t1: Address of next pos to be inserted in output string
+	sb   $t0, 0($t1)       # Insert the read character into output string
+
+	addi $s2, $s2, 1       # Move to next pos to be inserted in output string
+
+	j    IntToStr_revert
+
+IntToStr_endRevert:
+	# Insert null char
+	add  $t1, $s1, $s2
+	sb   $zero, 0($t1)
+
+	lw   $t0, 0($sp)   # Load the number of bytes allocated for temp string from stack
+	addi $sp, $sp, 4
+	add  $sp, $sp, $t0 # Deallocate memory of temp string
+
+	# Restore saved registers to original state
+	lw   $s0, 0($sp)
+	lw   $s1, 4($sp)
+	lw   $s2, 8($sp)
+	lw   $s3, 12($sp)
+	lw   $s4, 16($sp)
+	addi $sp, $sp, 20
+
+	add  $v0, $s1, $zero # Return the address of output string
+	jr   $ra
+
+########################################
+# Count the number of digits of a non-negative number
+# $a0: non-negative number
+	.data
+	.text
+CountDigit:
+	addi $v0, $zero, 1
+	addi $t0, $zero, 10
+
+CountDigit_while:
+	slt  $t1, $a0, $t0
+	bne  $t1, $zero, CountDigit_return
+
+	addi $t1, $zero, 10
+	mul  $t0, $t0, $t1
+
+	addi $v0, $v0, 1
+
+	j    CountDigit_while
+
+CountDigit_return:
 	jr   $ra
 
 ##### int StrToInt(char* str_input, int n)
