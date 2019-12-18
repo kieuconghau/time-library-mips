@@ -1,11 +1,12 @@
 ##### int main()
 .data
-str:	.asciiz "29/02/2020"
-str1:	.asciiz "29/02/2024"
+str:	.asciiz "27/02/2020"
+str1:	.asciiz "27/02/2021"
 .text
 Main:
 	la   $a0, str
 	la   $a1, str1
+	jal  GetTime
 	
 	add  $a0, $zero, $v0
 	addi $v0, $zero, 1
@@ -825,4 +826,160 @@ Weekday_return:
 	jr   $ra
 
 
+##### int GetTime(char* TIME_1, char* TIME2_)
+	# initial:
+	# 0 = result
+	# 4 = day_1, 8 = month_1, 12 = year_1
+	# 16 = day_2, 20 = month_2, 24 = year_2
+	# 28 = t1, 32 = t2 
+	# 36 = leapYear_1, 40 = leapYear_2 
+	# 44 = $ra, 48 = $a0, 52 = $a1
+GetTime:
+	addi $sp, $sp, -56		# initial
+	sw   $ra, 44($sp)
+	sw   $a0, 48($sp)
+	sw   $a1, 52($sp)
+	
+	jal  Day
+	sw   $v0, 4($sp)		# day_1 = Day(TIME_1)
+	
+	lw   $a0, 48($sp)
+	jal  Month
+	sw   $v0, 8($sp)		# month_1 = Month(TIME_1)
 
+	lw   $a0, 48($sp)
+	jal  Year
+	add  $t2, $t2, $v0		# year_1 = Year(TIME_1)
+	sw   $v0, 12($sp)
+	
+	lw   $a0, 52($sp)
+	jal  Day			
+	sw   $v0, 16($sp)		# day_2 = Day(TIME_2)
+
+	lw   $a0, 52($sp)
+	jal  Month			
+	sw   $v0, 20($sp)		# month_2 = Month(TIME_2)
+	
+	lw   $a0, 52($sp)
+	jal  Year			
+	sw   $v0, 24($sp)		# year_2 = Year(TIME_2)
+
+	
+	lw   $t1, 12($sp)		# load year_1
+	lw   $t2, 24($sp)		# load year_2
+	
+	bne  $t1, $t2, cont		# if (year_1 == year_2)
+	add  $v0, $0, $0		
+	lw   $ra, 44($sp)
+	addi $sp, $sp, 56
+	jr   $ra			# return 0
+	
+cont: 	
+	lw   $t5, 48($sp)
+	lw   $t6, 52($sp)
+	sw   $t5, 28($sp)		# t1 = TIME_1
+	sw   $t6, 32($sp)		# t2 = TIME_2
+
+	slt  $t3, $t2, $t1		# (year_2 < year_1)
+	beq  $t3, $0, cont1		# if (year_2 < year_1)
+	sw   $t6, 28($sp)		# t1 = TIME_2
+	sw   $t5, 32($sp)		# t2 = TIME_1
+	
+	lw   $a0, 52($sp)
+	jal  Day			
+	sw   $v0, 4($sp)		# day_1 = Day(TIME_2)
+	
+	lw   $a0, 52($sp)
+	jal  Month		
+	sw   $v0, 8($sp)		# month_1 = Month(TIME_2)
+
+	lw   $a0, 52($sp)
+	jal  Year	
+	sw   $v0, 12($sp)		# year_1 = Year(TIME_2)
+	
+	
+	lw   $a0, 48($sp)
+	jal  Day			
+	sw   $v0, 16($sp)		# day_2 = Year(TIME_1)
+	
+	lw   $a0, 48($sp)
+	jal  Month		
+	sw   $v0, 20($sp)		# month_2 = Month(TIME_1)
+	
+	lw   $a0, 48($sp)
+	jal  Year		
+	sw   $v0, 24($sp)		# year_2 = Year(TIME_1)
+
+
+cont1:  lw   $t1, 12($sp)		# load year_1
+	lw   $t2, 24($sp)		# load year_2
+	sub  $t0, $t2, $t1		# result = year_2 - year_1
+	addi $t0, $t0, -1		# result -= 1
+	sw   $t0, 0($sp)
+
+	lw   $t1, 8($sp)		# load month_1
+	lw   $t2, 20($sp)		# load month_2
+	slt  $t0, $t1, $t2
+	beq  $t0, $0, cont2		# if(month_1 < month_2)
+	lw   $t0, 0($sp)		# result += 1
+	addi $t0, $t0, 1
+	sw   $t0, 0($sp)
+	j exit_GetTime
+	
+cont2:  bne  $t1, $t2, exit_GetTime
+	
+	lw   $a0, 28($sp)
+	jal  LeapYear		
+	sw   $v0, 36($sp)		# leapYear_1 = LeapYear(t1)
+	
+	lw   $a0, 32($sp)
+	jal  LeapYear		
+	sw   $v0, 40($sp)		# leapYear_2 = LeapYear(t2)
+	
+	lw   $t1, 36($sp)		# load leapYear_1
+	lw   $t2, 40($sp)		# load leapYear_2
+	
+	lw   $t0, 8($sp)		# load month
+	bne  $t0, 2, normal		# if(month == 2)
+	beq  $t1, $t2, normal		# if (leapYear_1 != leapYear_2)
+	
+cont4:	lw   $t1, 4($sp)		# load day_1
+	lw   $t2, 16($sp)		# load day_2
+	lw   $t3, 36($sp)		# load leapYear_1
+	lw   $t4, 40($sp)		# load leapYear_2
+
+	bne  $t3, 1, cont5		# if (leapYear_1 == 1)
+	bne  $t1, 29, cont5		# if (day_1 == 29)
+	bne  $t2, 28, cont5		# if (day_2 == 28)
+	j increase
+	
+cont5:  bne  $t4, 1, cont6		# if (leapYear_2 == 1)  
+	bne  $t2, 29, cont6		# if (day_2 == 29)
+	bne  $t1, 28, cont6		# if (day_1 == 28)
+	j increase
+	
+cont6:  bne  $t3, 1, cont7		# if(leapYear_1 == 1)
+	bne  $t1, 28, cont7		# if(day_1 == 28)
+	bne  $t2, 28, cont7		# if(day_2 == 28)
+	j increase			# 28/02/2020 -> 28/2/2021 => 1
+
+cont7:	bne  $t4, 1, normal		# if(leapYear_2 == 1)
+	bne  $t1, 28, normal		# if(day_1 == 28)
+	bne  $t2, 28, normal		# if(day_2 == 28)
+	j exit_GetTime
+
+normal:	lw   $t1, 4($sp)		# load day_1
+	lw   $t2, 16($sp)		# load day_2
+	slt  $t3, $t2, $t1		# (day_2 < day_1)
+	bne  $t3, $0, exit_GetTime	# if(day_2 >= day_1)
+	
+increase: 
+	lw    $t5, 0($sp)		
+	addi  $t5, $t5, 1		# result += 1
+	sw    $t5, 0($sp)
+	
+exit_GetTime:
+	lw    $v0, 0($sp)
+	lw    $ra, 44($sp)
+	addi  $sp, $sp, 56
+	jr $ra
