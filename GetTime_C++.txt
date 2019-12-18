@@ -1,0 +1,66 @@
+int GetTime(char* TIME_1, char* TIME_2)
+{
+	int d1 = Day(TIME_1);
+	int m1 = Month(TIME_1);
+	int y1 = Year(TIME_1);
+
+	int d2 = Day(TIME_2);
+	int m2 = Month(TIME_2);
+	int y2 = Year(TIME_2);
+
+	if (y2 < y1)
+		goto GetTime_swap;
+
+	if (y1 < y2)
+		goto GetTime_process;
+
+	if (m2 < m1)
+		goto GetTime_swap;
+
+	if (m1 < m2)
+		goto GetTime_process;
+	
+	if (d2 < d1)
+		goto GetTime_swap;
+
+	goto GetTime_process;
+	
+GetTime_swap:
+	d1 = d1 + d2;
+	d2 = d1 - d2;
+	d1 = d1 - d2;
+
+	m1 = m1 + m2;
+	m2 = m1 - m2;
+	m1 = m1 - m2;	
+	
+	y1 = y1 + y2;
+	y2 = y1 - y2;
+	y1 = y1 - y2;
+	
+GetTime_process:
+	int v = d2 - d1;
+	
+	if (v == 0)
+		goto GetTime_return;
+
+	if (m2 < m1)
+	{
+		v = v - 1;
+		goto GetTime_return;
+	}
+
+	if (m1 < m2)
+		goto GetTime_return;
+
+	if (d2 < d1)
+	{
+		v = v - 1;
+		goto GetTime_return;
+	}
+
+	goto GetTime_return;
+	
+GetTime_return:
+	return v;
+}

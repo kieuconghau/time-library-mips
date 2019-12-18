@@ -1,10 +1,15 @@
 ##### int main()
 .data
-str:	.asciiz "29/12/1800"
+str:	.asciiz "29/02/2020"
+str1:	.asciiz "29/02/2024"
 .text
 Main:
 	la   $a0, str
-	jal  PrintNearLeapYear
+	la   $a1, str1
+	
+	add  $a0, $zero, $v0
+	addi $v0, $zero, 1
+	syscall
 	
 	# Exit
 	li   $v0, 10
@@ -40,45 +45,53 @@ StrToInt_end:
 ##### int Day(char* TIME)
 Day:
 						# $a0: TIME (char*)
-	addi $sp, $sp, -4
-	sw   $ra, 0($sp)
-	
+	addi $sp, $sp, -8
+	sw   $ra, 4($sp)
+	sw   $a0, 0($sp)
 						# $a0: TIME
 	addi $a1, $zero, 2			# $a1: 2
 	jal  StrToInt
 	
-	lw   $ra, 0($sp)
-	addi $sp, $sp, 4
+	lw   $a0, 0($sp)
+	lw   $ra, 4($sp)
+	addi $sp, $sp, 8
+	
 	jr   $ra
 	
 
 ##### int Month(char* TIME)
 Month:
 						# $a0: TIME (char*)
-	addi $sp, $sp, -4
-	sw   $ra, 0($sp)
+	addi $sp, $sp, -8
+	sw   $ra, 4($sp)
+	sw   $a0, 0($sp)
 	
 	addi $a0, $a0, 3			# $a0: TIME + 3
 	addi $a1, $zero, 2			# $a1: 2
 	jal  StrToInt
 	
-	lw   $ra, 0($sp)
-	addi $sp, $sp, 4
+	lw   $a0, 0($sp)
+	lw   $ra, 4($sp)
+	addi $sp, $sp, 8
+	
 	jr   $ra
 	
 
 ##### int Year(char* TIME)
 Year:
 						# $a0: TIME (char*)
-	addi $sp, $sp, -4
-	sw   $ra, 0($sp)
+	addi $sp, $sp, -8
+	sw   $ra, 4($sp)
+	sw   $a0, 0($sp)
 	
 	addi $a0, $a0, 6			# $a0: TIME + 6
 	addi $a1, $zero, 4			# $a1: 4
 	jal  StrToInt
 	
-	lw   $ra, 0($sp)
-	addi $sp, $sp, 4
+	lw   $a0, 0($sp)
+	lw   $ra, 4($sp)
+	addi $sp, $sp, 8
+	
 	jr   $ra
 
 
@@ -112,17 +125,20 @@ IsLeap_return_1:			# return 1
 ##### int LeapYear(char* TIME)
 LeapYear:
 						# $a0: TIME (char*)
-	addi $sp, $sp, -4
-	sw   $ra, 0($sp)
-						
+	addi $sp, $sp, -8
+	sw   $ra, 4($sp)
+	sw   $a0, 0($sp)
+											
 						# $a0: TIME
 	jal  Year				# return year (int)
 	
 	add  $a0, $zero, $v0			# $a0: year (int)
 	jal  IsLeap				# return IsLeap(year)
 	
-	lw   $ra, 0($sp)
-	addi $sp, $sp, 4
+	lw   $a0, 0($sp)
+	lw   $ra, 4($sp)
+	addi $sp, $sp, 8
+	
 	jr   $ra
 
 
@@ -807,3 +823,6 @@ Weekday_return:
 	addi $sp, $sp, 20
 	
 	jr   $ra
+
+
+
