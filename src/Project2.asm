@@ -43,7 +43,7 @@ InputDate_input:
 
 	# Input day
 	addi $a0, $sp, 0
-	addi $a1, $zero, 3
+	addi $a1, $zero, 4
 	addi $v0, $zero, 8
 	syscall
 
@@ -54,7 +54,7 @@ InputDate_input:
 
 	# Input month
 	addi $a0, $sp, 4
-	addi $a1, $zero, 3
+	addi $a1, $zero, 4
 	addi $v0, $zero, 8
 	syscall
 
@@ -65,14 +65,14 @@ InputDate_input:
 
 	# Input year
 	addi $a0, $sp, 8
-	addi $a1, $zero, 5
+	addi $a1, $zero, 8
 	addi $v0, $zero, 8
 	syscall
 
 
 	# Find the length of inputted 'year' string
 	addi $a0, $sp, 8
-	addi $a1, $zero, 5
+	addi $a1, $zero, 8
 	jal  StringLength
 	add  $s0, $v0, $zero
 
@@ -96,7 +96,7 @@ InputDate_input:
 
 	# Find the length of inputted 'month' string
 	addi $a0, $sp, 4
-	addi $a1, $zero, 3
+	addi $a1, $zero, 4
 	jal  StringLength
 	add  $s1, $v0, $zero
 
@@ -120,7 +120,7 @@ InputDate_input:
 
 	# Find the length of inputted 'day' string
 	addi $a0, $sp, 0
-	addi $a1, $zero, 3
+	addi $a1, $zero, 4
 	jal  StringLength
 	add  $s2, $v0, $zero
 
