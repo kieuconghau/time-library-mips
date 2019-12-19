@@ -1,15 +1,151 @@
 # Main routine
 	.data
-TIME: .space 20
+request:   .asciiz "----------Choose one of the following functions-----------------\n"
+func_1:    .asciiz "\t1. Print string TIME with format DD/MM/YYYY\n"
+func_2:    .asciiz "\t2. Convert string TIME into one of the following formats:\n"
+func_2A:   .asciiz "\t\tA. MM/DD/YYYY\n"
+func_2B:   .asciiz "\t\tB. Month DD, YYYY\n"
+func_2C:   .asciiz "\t\tC. DD Month, YYYY\n"
+func_3:    .asciiz "\t3. Show the date of the week for the inputted date\n"
+func_4:    .asciiz "\t4. Check if the year in string TIME is a leap year\n"
+func_5:    .asciiz "\t5. Input another date called TIME_2 and show the time interval (in years) between TIME and TIME_2\n"
+func_6:    .asciiz "\t6. Show the two nearest leap years of the year in string TIME\n"
+separator: .asciiz "----------------------------------------------------------------\n"
+choice:    .asciiz "Choice: "
+result:    .asciiz "Result: "
+invalid_choice: .asciiz "Invalid choice.\nRe-enter choice: "
 	.text
 	.globl Main
 Main:
-	la   $a0, TIME
+	# Allocate 20 bytes for string TIME, and 4 bytes for string of user choice
+	addi $sp, $sp, -24
+
+	# Input date
+	addi $a0, $sp, 0
 	jal  InputDate
 
-	add  $a0, $v0, $zero
+	# Print the instructions
+	la   $a0, request
 	addi $v0, $zero, 4
 	syscall
+
+	la   $a0, func_1
+	addi $v0, $zero, 4
+	syscall
+
+	la   $a0, func_2
+	addi $v0, $zero, 4
+	syscall
+
+	la   $a0, func_2A
+	addi $v0, $zero, 4
+	syscall
+
+	la   $a0, func_2B
+	addi $v0, $zero, 4
+	syscall
+
+	la   $a0, func_2C
+	addi $v0, $zero, 4
+	syscall
+
+	la   $a0, func_3
+	addi $v0, $zero, 4
+	syscall
+
+	la   $a0, func_4
+	addi $v0, $zero, 4
+	syscall
+
+	la   $a0, func_5
+	addi $v0, $zero, 4
+	syscall
+
+	la   $a0, func_6
+	addi $v0, $zero, 4
+	syscall
+
+	la   $a0, separator
+	addi $v0, $zero, 4
+	syscall
+
+	la   $a0, choice
+	addi $v0, $zero, 4
+	syscall
+
+Main_enterChoice:
+	# Prompt user to enter a choice
+	addi $a0, $sp, 20
+	addi $a1, $zero, 4
+	addi $v0, $zero, 8
+	syscall
+
+	la   $a0, result
+	addi $v0, $zero, 4
+	syscall
+
+	lb   $s0, 20($sp) # $s0: 1st char of the inputted choice
+	lb   $s1, 21($sp) # $s1: 2nd char of the inputted choice
+
+	# Switch statement for $s0
+	addi $t0, $s0, -49
+	bne  $t0, $zero, Main_case2 # Branch if $s0 != '1'
+	addi $t0, $s1, -10
+	bne  $t0, $zero, Main_defaultCase
+
+
+
+	j    Main_return
+Main_case2:
+	addi $t0, $s0, -50
+	bne  $t0, $zero, Main_case3 # Branch if $s0 != '2'
+
+
+
+	j    Main_return
+Main_case3:
+	addi $t0, $s0, -51
+	bne  $t0, $zero, Main_case4 # Branch if $s0 != '3'
+	addi $t0, $s1, -10
+	bne  $t0, $zero, Main_defaultCase
+
+
+
+	j    Main_return
+Main_case4:
+	addi $t0, $s0, -52
+	bne  $t0, $zero, Main_case5 # Branch if $s0 != '4'
+	addi $t0, $s1, -10
+	bne  $t0, $zero, Main_defaultCase
+
+
+
+	j    Main_return
+Main_case5:
+	addi $t0, $s0, -53
+	bne  $t0, $zero, Main_case6 # Branch if $s0 != '5'
+	addi $t0, $s1, -10
+	bne  $t0, $zero, Main_defaultCase
+
+
+
+	j    Main_return
+Main_case6:
+	addi $t0, $s0, -54
+	bne  $t0, $zero, Main_defaultCase # Branch if $s0 != '6'
+	addi $t0, $s1, -10
+	bne  $t0, $zero, Main_defaultCase
+
+
+
+	j    Main_return
+Main_defaultCase:
+	la   $a0, invalid_choice
+	addi $v0, $zero, 4
+	syscall
+	j    Main_enterChoice
+Main_return:
+	addi $sp, $sp, 24
 
 	# Exit
 	addi $v0, $zero, 10
@@ -18,10 +154,10 @@ Main:
 ########################################
 # Prompt user to input date, check its validity, and store it.
 	.data
-prompt1: .asciiz "Nhap ngay DAY: "
-prompt2: .asciiz "Nhap thang MONTH: "
-prompt3: .asciiz "Nhap nam YEAR: "
-error:   .asciiz "Du lieu khong hop le. Xin vui long nhap lai:\n"
+prompt_day:   .asciiz "Enter a DAY: "
+prompt_month: .asciiz "Enter a MONTH: "
+prompt_year:  .asciiz "Enter a YEAR: "
+invalid_date: .asciiz "Invalid inputs. Please re-enter the inputs:\n"
 	.text
 InputDate:
 	addi $sp, $sp, -36
@@ -37,7 +173,7 @@ InputDate:
 
 InputDate_input:
 	# Prompt user to input day
-	la   $a0, prompt1
+	la   $a0, prompt_day
 	addi $v0, $zero, 4
 	syscall
 
@@ -48,7 +184,7 @@ InputDate_input:
 	syscall
 
 	# Prompt user to input month
-	la   $a0, prompt2
+	la   $a0, prompt_month
 	addi $v0, $zero, 4
 	syscall
 
@@ -59,7 +195,7 @@ InputDate_input:
 	syscall
 
 	# Prompt user to input year
-	la   $a0, prompt3
+	la   $a0, prompt_year
 	addi $v0, $zero, 4
 	syscall
 
@@ -147,7 +283,7 @@ InputDate_input:
 
 InputDate_error:
 	# Print error message
-	la   $a0, error
+	la   $a0, invalid_date
 	addi $v0, $zero, 4
 	syscall
 
