@@ -442,8 +442,18 @@ CheckMonth_return:
 	.text
 CheckYear:
 	addi $v0, $zero, 1
-	bne  $a0, $zero, CheckYear_return
+
+	beq  $a0, $zero, CheckYear_setFalse
+
+	addi $t0, $zero, 9999
+	slt  $t1, $t0, $a0
+	bne  $t1, $zero, CheckYear_setFalse
+
+	j    CheckYear_return
+
+CheckYear_setFalse:
 	add  $v0, $zero, $zero
+
 CheckYear_return:
 	jr   $ra
 
