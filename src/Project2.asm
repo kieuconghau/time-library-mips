@@ -14,6 +14,7 @@ separator: .asciiz "------------------------------------------------------------
 choice:    .asciiz "Choice: "
 result:    .asciiz "Result: "
 invalid_choice: .asciiz "Invalid choice.\nRe-enter choice: "
+func_5_prompt:  .asciiz "Enter another date:\n"
 	.text
 	.globl Main
 Main:
@@ -80,10 +81,6 @@ Main_enterChoice:
 	addi $v0, $zero, 8
 	syscall
 
-	la   $a0, result
-	addi $v0, $zero, 4
-	syscall
-
 	lb   $s0, 20($sp) # $s0: 1st char of the inputted choice
 	lb   $s1, 21($sp) # $s1: 2nd char of the inputted choice
 
@@ -92,6 +89,10 @@ Main_enterChoice:
 	bne  $t0, $zero, Main_case2 # Branch to next case if $s0 != '1'
 	addi $t0, $s1, -10
 	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s1 != '\n'
+
+	la   $a0, result
+	addi $v0, $zero, 4
+	syscall
 
 	addi $a0, $sp, 0
 	addi $v0, $zero, 4
@@ -129,6 +130,10 @@ Main_case2_body:
 	add  $a1, $s1, $zero
 	jal  Convert
 
+	la   $a0, result
+	addi $v0, $zero, 4
+	syscall
+
 	add  $a0, $v0, $zero
 	addi $v0, $zero, 4
 	syscall
@@ -143,6 +148,10 @@ Main_case3:
 
 	addi $v0, $sp, 0
 	jal  Weekday
+
+	la   $a0, result
+	addi $v0, $zero, 4
+	syscall
 
 	add  $a0, $v0, $zero
 	addi $v0, $zero, 4
@@ -159,6 +168,10 @@ Main_case4:
 	addi $v0, $sp, 0
 	jal  LeapYear
 
+	la   $a0, result
+	addi $v0, $zero, 4
+	syscall
+
 	add  $a0, $v0, $zero
 	addi $v0, $zero, 1
 	syscall
@@ -171,7 +184,28 @@ Main_case5:
 	addi $t0, $s1, -10
 	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s1 != '\n'
 
+	addi $sp, $sp, -12   # Allocate 12 bytes for the string TIME_2
 
+	la   $a0, func_5_prompt
+	addi $v0, $zero, 4
+	syscall
+
+	addi $a0, $sp, 0
+	jal  InputTime
+
+	addi $a0, $sp, 12    # Pass the address of TIME as 1st argument
+	add  $a1, $v0, $zero # Pass the address of TIME_2 as 2nd argument
+	jal  GetTime
+
+	la   $a0, result
+	addi $v0, $zero, 4
+	syscall
+
+	add  $a0, $v0, $zero
+	addi $v0, $zero, 1
+	syscall
+
+	addi $sp, $sp, 12
 
 	j    Main_return
 
@@ -180,6 +214,10 @@ Main_case6:
 	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s0 != '6'
 	addi $t0, $s1, -10
 	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s1 != '\n'
+
+	la   $a0, result
+	addi $v0, $zero, 4
+	syscall
 
 	addi $v0, $sp, 0
 	jal  PrintNearLeapYear
