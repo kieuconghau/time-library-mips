@@ -129,12 +129,13 @@ Main_case2_body:
 	addi $a0, $sp, 0
 	add  $a1, $s1, $zero
 	jal  Convert
+	add  $t0, $v0, $zero
 
 	la   $a0, result
 	addi $v0, $zero, 4
 	syscall
 
-	add  $a0, $v0, $zero
+	add  $a0, $t0, $zero
 	addi $v0, $zero, 4
 	syscall
 
@@ -146,14 +147,15 @@ Main_case3:
 	addi $t0, $s1, -10
 	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s1 != '\n'
 
-	addi $v0, $sp, 0
+	addi $a0, $sp, 0
 	jal  Weekday
+	add  $t0, $v0, $zero
 
 	la   $a0, result
 	addi $v0, $zero, 4
 	syscall
 
-	add  $a0, $v0, $zero
+	add  $a0, $t0, $zero
 	addi $v0, $zero, 4
 	syscall
 
@@ -165,14 +167,15 @@ Main_case4:
 	addi $t0, $s1, -10
 	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s1 != '\n'
 
-	addi $v0, $sp, 0
+	addi $a0, $sp, 0
 	jal  LeapYear
+	add  $t0, $v0, $zero
 
 	la   $a0, result
 	addi $v0, $zero, 4
 	syscall
 
-	add  $a0, $v0, $zero
+	add  $a0, $t0, $zero
 	addi $v0, $zero, 1
 	syscall
 
@@ -196,12 +199,13 @@ Main_case5:
 	addi $a0, $sp, 12    # Pass the address of TIME as 1st argument
 	add  $a1, $v0, $zero # Pass the address of TIME_2 as 2nd argument
 	jal  GetTime
+	add  $t0, $v0, $zero
 
 	la   $a0, result
 	addi $v0, $zero, 4
 	syscall
 
-	add  $a0, $v0, $zero
+	add  $a0, $t0, $zero
 	addi $v0, $zero, 1
 	syscall
 
@@ -219,7 +223,7 @@ Main_case6:
 	addi $v0, $zero, 4
 	syscall
 
-	addi $v0, $sp, 0
+	addi $a0, $sp, 0
 	jal  PrintNearLeapYear
 
 	j    Main_return
