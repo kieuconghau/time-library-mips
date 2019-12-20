@@ -89,61 +89,109 @@ Main_enterChoice:
 
 	# Switch statement for $s0
 	addi $t0, $s0, -49
-	bne  $t0, $zero, Main_case2 # Branch if $s0 != '1'
+	bne  $t0, $zero, Main_case2 # Branch to next case if $s0 != '1'
 	addi $t0, $s1, -10
-	bne  $t0, $zero, Main_defaultCase
+	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s1 != '\n'
 
-
+	addi $a0, $sp, 0
+	addi $v0, $zero, 4
+	syscall
 
 	j    Main_return
+
 Main_case2:
 	addi $t0, $s0, -50
-	bne  $t0, $zero, Main_case3 # Branch if $s0 != '2'
+	bne  $t0, $zero, Main_case3 # Branch to next case if $s0 != '2'
 
+	addi $t0, $s1, -97
+	beq  $t0, $zero, Main_case2_body # Branch to body of case 2 if $s1 == 'a'
+	addi $t0, $s1, -65
+	bne  $t0, $zero, Main_case2_body # Branch to body of case 2 if $s1 == 'A'
+	addi $t0, $s1, -98
+	beq  $t0, $zero, Main_case2_body # Branch to body of case 2 if $s1 == 'b'
+	addi $t0, $s1, -66
+	bne  $t0, $zero, Main_case2_body # Branch to body of case 2 if $s1 == 'B'
+	addi $t0, $s1, -99
+	beq  $t0, $zero, Main_case2_body # Branch to body of case 2 if $s1 == 'c'
+	addi $t0, $s1, -67
+	bne  $t0, $zero, Main_case2_body # Branch to body of case 2 if $s1 == 'C'
 
+	j    Main_defaultCase # Jump to default case if none of the above conditions
+	                      # are satisfied.
+
+Main_case2_body:
+	lb   $t1, 22($sp) # Get the 3rd char of the inputted choice
+	addi $t0, $t1, -10
+	bne  $t0, $zero, Main_defaultCase # Branch to default case if
+	                                  # the 3rd char != '\n'
+
+	addi $a0, $sp, 0
+	add  $a1, $s1, $zero
+	jal  Convert
+
+	add  $a0, $v0, $zero
+	addi $v0, $zero, 4
+	syscall
 
 	j    Main_return
+
 Main_case3:
 	addi $t0, $s0, -51
-	bne  $t0, $zero, Main_case4 # Branch if $s0 != '3'
+	bne  $t0, $zero, Main_case4 # Branch to next case if $s0 != '3'
 	addi $t0, $s1, -10
-	bne  $t0, $zero, Main_defaultCase
+	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s1 != '\n'
 
+	addi $v0, $sp, 0
+	jal  Weekday
 
+	add  $a0, $v0, $zero
+	addi $v0, $zero, 4
+	syscall
 
 	j    Main_return
+
 Main_case4:
 	addi $t0, $s0, -52
-	bne  $t0, $zero, Main_case5 # Branch if $s0 != '4'
+	bne  $t0, $zero, Main_case5 # Branch to next case if $s0 != '4'
 	addi $t0, $s1, -10
-	bne  $t0, $zero, Main_defaultCase
+	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s1 != '\n'
 
+	addi $v0, $sp, 0
+	jal  LeapYear
 
+	add  $a0, $v0, $zero
+	addi $v0, $zero, 1
+	syscall
 
 	j    Main_return
+
 Main_case5:
 	addi $t0, $s0, -53
-	bne  $t0, $zero, Main_case6 # Branch if $s0 != '5'
+	bne  $t0, $zero, Main_case6 # Branch to next case if $s0 != '5'
 	addi $t0, $s1, -10
-	bne  $t0, $zero, Main_defaultCase
+	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s1 != '\n'
 
 
 
 	j    Main_return
+
 Main_case6:
 	addi $t0, $s0, -54
-	bne  $t0, $zero, Main_defaultCase # Branch if $s0 != '6'
+	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s0 != '6'
 	addi $t0, $s1, -10
-	bne  $t0, $zero, Main_defaultCase
+	bne  $t0, $zero, Main_defaultCase # Branch to default case if $s1 != '\n'
 
-
+	addi $v0, $sp, 0
+	jal  PrintNearLeapYear
 
 	j    Main_return
+
 Main_defaultCase:
 	la   $a0, invalid_choice
 	addi $v0, $zero, 4
 	syscall
 	j    Main_enterChoice
+
 Main_return:
 	addi $sp, $sp, 24
 
@@ -336,7 +384,8 @@ Date:
 	jal  IntToStr
 	add  $t0, $v0, $zero
 
-	add  $t1, $zero, $zero # $t1: Position of next char to be retrieved from day string
+	add  $t1, $zero, $zero # $t1: Position of next char to be retrieved
+	                       # from day string
 
 	# Check if day < 10 (i.e. day has 1 digit)
 	lw   $t2, 8($sp)
@@ -380,7 +429,8 @@ Date_endInsertDay:
 	jal  IntToStr
 	add  $t0, $v0, $zero
 
-	add  $t1, $zero, $zero # $t1: Position of next char to be retrieved from month string
+	add  $t1, $zero, $zero # $t1: Position of next char to be retrieved
+	                       # from month string
 
 	# Check if month < 10 (i.e. month has 1 digit)
 	lw   $t2, 12($sp)
@@ -424,7 +474,8 @@ Date_endInsertMonth:
 	jal  IntToStr
 	add  $t0, $v0, $zero
 
-	add  $t1, $zero, $zero # $t1: Position of next char to be retrieved from year string
+	add  $t1, $zero, $zero # $t1: Position of next char to be retrieved
+	                       # from year string
 
 	addi $t2, $zero, 1000
 Date_fillZeroBeforeYear:
@@ -531,7 +582,8 @@ CheckDay:
 	j    CheckDay_return
 
 CheckDay_normalCase:
-	addi $t0, $sp, 0       # $t0 = address of array containing num of days in each month
+	addi $t0, $sp, 0       # $t0 = address of array containing
+	                       # the number of days in each month
 	addi $t1, $a1, -1      # $t1 = month - 1
 	sll  $t1, $t1, 2
 	add  $t1, $t1, $t0
